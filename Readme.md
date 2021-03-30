@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Мария Дюбанова](https://up.htmlacademy.ru/ecmascript/14/user/845299).
-* Наставник: `Неизвестно`.
+* Наставник: [RAMAN LAURYNIUK](https://htmlacademy.ru/profile/id1666565).
 
 ---
 
