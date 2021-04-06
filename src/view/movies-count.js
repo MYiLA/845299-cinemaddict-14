@@ -1,3 +1,3 @@
-export const createMoviesCountTemplate = () => {
-  return '<p>130 291 movies inside</p>';
+export const createMoviesCountTemplate = (dataLength) => {
+  return `<p>${dataLength} movies inside</p>`;
 };

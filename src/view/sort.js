@@ -1,4 +1,17 @@
-export const createSortTemplate = () => {
+export const createSortTemplate = (data) => {
+
+  // const dataDefault = () => {
+  //   return data;
+  // };
+
+  // const dataDate = () => {
+  //   return data.sort();
+  // };
+
+  // const dataRating = () => {
+  //   return data.sort();
+  // };
+
   return `
   <ul class="sort">
     <li><a href="#" class="sort__button">Sort by default</a></li>
