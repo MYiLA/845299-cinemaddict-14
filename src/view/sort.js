@@ -1,4 +1,4 @@
-export const createSortTemplate = (data) => {
+export const createSortTemplate = () => {
 
   // const dataDefault = () => {
   //   return data;
