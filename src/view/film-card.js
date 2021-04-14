@@ -1,8 +1,9 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
+import { createElement } from '../utils.js';
 
 const MAX_DESC_SYMBOL = 140;
 
-export const createFilmCardTemplate = (film, comments) => {
+const createFilmCardTemplate = (film, comments) => {
 
   const releaseDateRender = () => {
     if (!film.releaseDate) {
@@ -39,3 +40,27 @@ export const createFilmCardTemplate = (film, comments) => {
     </div>
   </article>`;
 };
+
+export default class FilmCard {
+  constructor(film, comments) {
+    this._film = film;
+    this._comments = comments;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardTemplate(this._film, this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

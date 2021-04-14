@@ -1,6 +1,7 @@
+import { createElement } from '../utils.js';
 // import dayjs from 'dayjs'; // библиотека дат и времени
 
-export const createNewCommentTemplate = (comment = {}) => {
+const createNewCommentTemplate = (comment = {}) => {
 
   const {
     text = '',
@@ -49,3 +50,26 @@ export const createNewCommentTemplate = (comment = {}) => {
     </div>
   </div>`;
 };
+
+export default class NewComment {
+  constructor(comment) {
+    this._comment = comment;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createNewCommentTemplate(this._comment);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

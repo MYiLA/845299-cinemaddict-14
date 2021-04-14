@@ -1,6 +1,6 @@
-import { getFilmPropertyCount } from '../utils.js';
+import { getFilmPropertyCount, createElement } from '../utils.js';
 
-export const createMenuTemplate = (data) => {
+const createMenuTemplate = (data) => {
   const watchlistCount = getFilmPropertyCount(data, 'isWatchlist');
   const viewedCount = getFilmPropertyCount(data, 'isViewed');
   const favoriteCount = getFilmPropertyCount(data, 'isFavorite');
@@ -16,3 +16,26 @@ export const createMenuTemplate = (data) => {
     <a href="#stats" class="main-navigation__additional">Stats</a>
   </nav>`;
 };
+
+export default class Menu {
+  constructor(data) {
+    this._data = data;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
