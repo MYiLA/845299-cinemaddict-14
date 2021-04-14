@@ -1,6 +1,7 @@
-import {createNewCommentTemplate} from './new-comment.js';
+import { createElement } from '../utils.js';
+import NewComment from './new-comment.js';
 
-export const createFilmDetailsTemplate = (film, comments) => {
+const createFilmDetailsTemplate = (film, comments) => {
 
   const genresRender = () => {
     if (film.genres.length === 1) {
@@ -45,6 +46,8 @@ export const createFilmDetailsTemplate = (film, comments) => {
   };
 
   const getChecked = (bln) => bln ? 'checked' : '';
+
+  const newCommentComponent = new NewComment(comments[0]);
 
   return `
   <section class="film-details">
@@ -128,10 +131,34 @@ export const createFilmDetailsTemplate = (film, comments) => {
             ${commentsRender()}
           </ul>
 
-          ${createNewCommentTemplate(comments[0])}
+          ${newCommentComponent.getTemplate()}
 
         </section>
       </div>
     </form>
   </section>`;
 };
+
+export default class FilmDetails {
+  constructor(film, comments) {
+    this._film = film;
+    this._comments = comments;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsTemplate(this._film, this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

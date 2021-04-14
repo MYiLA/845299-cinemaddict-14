@@ -1,8 +1,6 @@
-export const createProfileTemplate = (dataLength, viewedCount) => {
+import { createElement } from '../utils.js';
 
-  if (!dataLength) {
-    return '';
-  }
+const createProfileTemplate = (dataLength, viewedCount) => {
 
   const titleRender = () => {
     if (viewedCount === 0) {
@@ -28,3 +26,27 @@ export const createProfileTemplate = (dataLength, viewedCount) => {
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };
+
+export default class Profile {
+  constructor(dataLength, viewedCount) {
+    this._dataLength = dataLength;
+    this._viewedCount = viewedCount;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createProfileTemplate(this._dataLength, this._viewedCount);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
