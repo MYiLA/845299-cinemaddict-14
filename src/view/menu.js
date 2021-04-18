@@ -1,4 +1,5 @@
-import { getFilmPropertyCount, createElement } from '../utils.js';
+import { getFilmPropertyCount } from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createMenuTemplate = (data) => {
   const watchlistCount = getFilmPropertyCount(data, 'isWatchlist');
@@ -17,25 +18,13 @@ const createMenuTemplate = (data) => {
   </nav>`;
 };
 
-export default class Menu {
+export default class Menu extends AbstractView {
   constructor(data) {
+    super();
     this._data = data;
-    this._element = null;
   }
 
   getTemplate() {
     return createMenuTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

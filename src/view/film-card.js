@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
-import { createElement } from '../utils.js';
+import AbstractView from './abstract.js';
 
 const MAX_DESC_SYMBOL = 140;
 
@@ -41,26 +41,30 @@ const createFilmCardTemplate = (film, comments) => {
   </article>`;
 };
 
-export default class FilmCard {
+export default class FilmCard extends AbstractView {
   constructor(film, comments) {
+    super();
     this._film = film;
     this._comments = comments;
-    this._element = null;
+    this._openClickHandler = this._openClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film, this._comments);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _openClickHandler(evt) {
+    evt.preventDefault();
+    // 3. А внутри абстрактного обработчика вызовем колбэк
+    this._callback.openClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setOpenClickHandler(callback) {
+    // 1. колбэк мы запишем во внутреннее свойство
+    this._callback.openClick = callback;
+    // 2. В addEventListener передадим абстрактный обработчик
+    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._openClickHandler);
+    this.getElement().querySelector('.film-card__title').addEventListener('click', this._openClickHandler);
+    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._openClickHandler);
   }
 }

@@ -33,7 +33,7 @@ const renderFilmCard = (filmsListElement, film, comments) => {
   const FilmDetailsComponent = new FilmDetailsView(film, comments);
 
   const openPopup = () => {
-    FilmDetailsComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', () => {
+    FilmDetailsComponent.setCloseClickHandler(() => {
       siteBodyElement.removeChild(FilmDetailsComponent.getElement());
       siteBodyElement.classList.remove('hide-overflow');
     });
@@ -42,9 +42,7 @@ const renderFilmCard = (filmsListElement, film, comments) => {
     siteBodyElement.classList.add('hide-overflow');
   };
 
-  filmComponent.getElement().querySelector('.film-card__poster').addEventListener('click', openPopup);
-  filmComponent.getElement().querySelector('.film-card__title').addEventListener('click', openPopup);
-  filmComponent.getElement().querySelector('.film-card__comments').addEventListener('click', openPopup);
+  filmComponent.setOpenClickHandler(openPopup);
 
   render(filmsListElement, filmComponent.getElement(), RenderPosition.BEFOREEND);
 };
@@ -74,9 +72,7 @@ const renderListCards = (filmsListContainer, data, filmsListTitle) => {
     const showMoreComponent = new ShowMoreView();
     render(filmsListContainer, showMoreComponent.getElement(), RenderPosition.BEFOREEND);
 
-    showMoreComponent.getElement().addEventListener('click', (evt) => {
-      evt.preventDefault();
-
+    showMoreComponent.setShowClickHandler(() => {
       data
         .slice(count, count + FILM_COUNT_STEP)
         .forEach((el) => {
