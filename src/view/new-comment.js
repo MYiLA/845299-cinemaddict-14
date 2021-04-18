@@ -1,4 +1,4 @@
-import { createElement } from '../utils.js';
+import AbstractView from './abstract.js';
 // import dayjs from 'dayjs'; // библиотека дат и времени
 
 const createNewCommentTemplate = (comment = {}) => {
@@ -51,25 +51,13 @@ const createNewCommentTemplate = (comment = {}) => {
   </div>`;
 };
 
-export default class NewComment {
+export default class NewComment extends AbstractView {
   constructor(comment) {
+    super();
     this._comment = comment;
-    this._element = null;
   }
 
   getTemplate() {
     return createNewCommentTemplate(this._comment);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
