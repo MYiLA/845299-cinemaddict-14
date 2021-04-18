@@ -1,5 +1,7 @@
 import { RenderPosition } from './const.js';
-import { getRandomInteger, getFilmPropertyCount, render } from './utils.js';
+import { getRandomInteger } from './utils/common.js';
+import { getFilmPropertyCount } from './utils/film.js';
+import { render, remove } from './utils/render.js';
 import { generateFilmData } from './mock/task.js';
 
 import FilmCardView from './view/film-card.js';
@@ -28,7 +30,7 @@ const siteFilmsElement = siteMainElement.querySelector('.films');
 const siteFilmsListElement = siteFilmsElement.querySelector('.films-list');
 const siteFilmsListTitleElement = siteFilmsElement.querySelector('.films-list__title');
 
-const renderFilmCard = (filmsListElement, film, comments) => {
+const renderFilmCard = (filmsList, film, comments) => {
   const filmComponent = new FilmCardView(film, comments);
   const FilmDetailsComponent = new FilmDetailsView(film, comments);
 
@@ -44,7 +46,7 @@ const renderFilmCard = (filmsListElement, film, comments) => {
 
   filmComponent.setOpenClickHandler(openPopup);
 
-  render(filmsListElement, filmComponent.getElement(), RenderPosition.BEFOREEND);
+  render(filmsList, filmComponent, RenderPosition.BEFOREEND);
 };
 
 const renderListCards = (filmsListContainer, data, filmsListTitle) => {
@@ -52,17 +54,17 @@ const renderListCards = (filmsListContainer, data, filmsListTitle) => {
 
   // заглушка
   if (!data.length) {
-    render(filmsListTitle, new FilmsListEmptyView().getElement(), RenderPosition.AFTEREND);
+    render(filmsListTitle, new FilmsListEmptyView(), RenderPosition.AFTEREND);
     return;
   }
 
-  render(filmsListTitle, filmsListComponent.getElement(), RenderPosition.AFTEREND);
+  render(filmsListTitle, filmsListComponent, RenderPosition.AFTEREND);
 
   data
     .slice(0, Math.min(data.length, FILM_COUNT_STEP))
     .forEach((el) => {
       el.forEach((value, key) => {
-        renderFilmCard(filmsListComponent.getElement(), key, value);
+        renderFilmCard(filmsListComponent, key, value);
       });
     });
 
@@ -70,45 +72,44 @@ const renderListCards = (filmsListContainer, data, filmsListTitle) => {
     let count = FILM_COUNT_STEP;
 
     const showMoreComponent = new ShowMoreView();
-    render(filmsListContainer, showMoreComponent.getElement(), RenderPosition.BEFOREEND);
+    render(filmsListContainer, showMoreComponent, RenderPosition.BEFOREEND);
 
     showMoreComponent.setShowClickHandler(() => {
       data
         .slice(count, count + FILM_COUNT_STEP)
         .forEach((el) => {
           el.forEach((value, key) => {
-            renderFilmCard(filmsListComponent.getElement(), key, value);
+            renderFilmCard(filmsListComponent, key, value);
           });
         });
 
       count += FILM_COUNT_STEP;
 
       if (data.length <= count) {
-        showMoreComponent.getElement().remove();
-        showMoreComponent.removeElement();
+        remove(showMoreComponent);
       }
     });
   }
 };
 
 const sortViewComponent = new SortView();
-render(siteMainElement, sortViewComponent.getElement(), RenderPosition.AFTERBEGIN);
+render(siteMainElement, sortViewComponent, RenderPosition.AFTERBEGIN);
 
 const menuViewComponent = new MenuView(data);
-render(siteMainElement, menuViewComponent.getElement(), RenderPosition.AFTERBEGIN);
+render(siteMainElement, menuViewComponent, RenderPosition.AFTERBEGIN);
 
 if (data.length) {
   const profileViewComponent = new ProfileView(data.length, viewedCount);
-  render(siteHeaderElement, profileViewComponent.getElement(), RenderPosition.BEFOREEND);
+  render(siteHeaderElement, profileViewComponent, RenderPosition.BEFOREEND);
 
   const filmsTopRatedComponent = new FilmsExtraView(data, 'Top rated');
-  render(siteFilmsElement, filmsTopRatedComponent.getElement(), RenderPosition.BEFOREEND);
+  render(siteFilmsElement, filmsTopRatedComponent, RenderPosition.BEFOREEND);
 
   const filmsMostCommentedComponent = new FilmsExtraView(data, 'Most commented');
-  render(siteFilmsElement, filmsMostCommentedComponent.getElement(), RenderPosition.BEFOREEND);
+  render(siteFilmsElement, filmsMostCommentedComponent, RenderPosition.BEFOREEND);
 }
 
 const moviesCountComponent = new MoviesCountView(data.length);
-render(siteFooterStatElement, moviesCountComponent.getElement(), RenderPosition.BEFOREEND);
+render(siteFooterStatElement, moviesCountComponent, RenderPosition.BEFOREEND);
 
 renderListCards(siteFilmsListElement, data, siteFilmsListTitleElement);

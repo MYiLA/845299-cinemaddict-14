@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger } from '../utils/common.js';
 
 const MAX_COMMENTS_COUNT = 5;
 const MIN_COMMENTS_COUNT = 0;

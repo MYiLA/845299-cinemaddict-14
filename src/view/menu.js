@@ -1,4 +1,4 @@
-import { getFilmPropertyCount } from '../utils.js';
+import { getFilmPropertyCount } from '../utils/film.js';
 import AbstractView from './abstract.js';
 
 const createMenuTemplate = (data) => {
