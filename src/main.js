@@ -14,12 +14,11 @@ const data = new Array(getRandomInteger(MAX_FILMS_COUNT)).fill().map(generateFil
 
 const viewedCount = getFilmPropertyCount(data, 'isViewed');
 
-const siteBodyElement = document.querySelector('body');
-const siteMainElement = siteBodyElement.querySelector('.main');
-const siteHeaderElement = siteBodyElement.querySelector('.header');
-const siteFooterStatElement = siteBodyElement.querySelector('.footer__statistics');
+const siteMainElement = document.querySelector('.main');
+const siteHeaderElement = document.querySelector('.header');
+const siteFooterStatElement = document.querySelector('.footer__statistics');
 
-const filmsListPresenter = new FilmsListPresenter(siteBodyElement);
+const filmsListPresenter = new FilmsListPresenter(siteMainElement);
 
 const menuViewComponent = new MenuView(data);
 
