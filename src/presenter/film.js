@@ -3,18 +3,26 @@ import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 
+const Mode = {
+  CLOSE: 'CLOSE',
+  OPEN: 'OPEN',
+};
+
 export default class Film {
-  constructor(filmListContainer, changeData) {
+  constructor(filmListContainer, changeData, changeMode) {
     this._siteBodyElement = document.querySelector('body');
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
+    this._handleCloseClick = this._handleCloseClick.bind(this);
     this._handleViewedClick = this._handleViewedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
 
     this._filmCardComponent = null;
+    this._mode = Mode.CLOSE;
   }
 
   init(film, comments) {
@@ -32,6 +40,12 @@ export default class Film {
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
 
+    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
+
+    this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
+    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+
     if (prevFilmCardComponent === null) {
       render(this._filmListContainer, this._filmCardComponent, RenderPosition.BEFORE_CHILDS);
       return;
@@ -46,32 +60,40 @@ export default class Film {
     remove(prevFilmCardComponent);
   }
 
-  _renderFilmDetails() {  // рендеринг одного попапа FilmDetailsView
-    this._filmDetailsComponent.setCloseClickHandler(() => {
-      //кнопка не работает, так как элемент _filmDetailsComponent не обновился и его не может найти боди
-      // console.log(this._filmDetailsComponent.getElement());
-      this._siteBodyElement.removeChild(this._filmDetailsComponent.getElement());
-      this._siteBodyElement.classList.remove('hide-overflow');
-    });
-
-    // this._filmDetailsComponent.setWatchlistClickHandler(() => {
-    //   console.log('Я НАЖАЛЬ');
-    //   this._handleWatchlistClick();
-    // });
-    // this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
-    // this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    // this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-
+  _openFilmDetails() {  // рендеринг одного попапа FilmDetailsView
+    this._changeMode();
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
     this._siteBodyElement.classList.add('hide-overflow');
+    this._mode = Mode.OPEN;
+  }
+
+  resetView() {
+    if (this._mode !== Mode.CLOSE) {
+      this._closeFilmDetails();
+    }
+  }
+
+  _closeFilmDetails() {
+    // кнопка не работает, так как элемент компонента _filmDetailsComponent не находит в боди
+    // из-за повторной инициализации карточки в списке
+    // раньше работало так(сейчас не работает)
+    // не понимаю как сделать так, чтобы закрытие попапа нормально работало
+    // this._siteBodyElement.removeChild(this._filmDetailsComponent.getElement());
+    // сделала временное решение
+    this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
+    this._siteBodyElement.classList.remove('hide-overflow');
+    this._mode = Mode.CLOSE;
+  }
+
+  _handleCloseClick() {
+    this._closeFilmDetails();
   }
 
   _hangleOpenClick() {
-    this._renderFilmDetails();
+    this._openFilmDetails();
   }
 
   _handleViewedClick() {
-    // console.log('Я НАЖАЛЬ в попапе');
     this._changeData(
       Object.assign(
         {},

@@ -28,6 +28,7 @@ export default class FilmsList {
     this._ShowMoreComponent = new ShowMoreView();
 
     this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
@@ -57,11 +58,18 @@ export default class FilmsList {
   _handleFilmChange(updatedFilm, comments) {
     const updatedItem = new Map().set(updatedFilm, comments);
     this._data = updateItem(this._data, updatedItem);
+    // Невозможность удалить попап связана с инициализацией. Почему?
     this._filmPresenter[updatedFilm.id].init(updatedFilm, comments);
   }
 
+  _handleModeChange() {
+    Object
+      .values(this._filmPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
   _renderFilmCard(film, comments) {
-    const filmPresenter = new FilmPresenter(this._FilmsListComponent, this._handleFilmChange);
+    const filmPresenter = new FilmPresenter(this._FilmsListComponent, this._handleFilmChange, this._handleModeChange);
     filmPresenter.init(film, comments);
     this._filmPresenter[film.id] = filmPresenter;
   }
