@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 import { getRandomInteger } from '../utils/common.js';
+import { nanoid } from 'nanoid';
 
 const MAX_COMMENTS_COUNT = 5;
 const MIN_COMMENTS_COUNT = 0;
@@ -150,6 +151,7 @@ const getRuntime = () => {
 
 const generateFilm = () => {
   return {
+    id: nanoid(),
     poster: getRandomItem(posters),
     title: getRandomItem(titles),
     titleOriginal: getRandomItem(titles),
