@@ -20,6 +20,7 @@ export default class Film {
     this._handleViewedClick = this._handleViewedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
 
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
@@ -64,6 +65,7 @@ export default class Film {
     this._changeMode();
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
     this._siteBodyElement.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.OPEN;
   }
 
@@ -74,15 +76,17 @@ export default class Film {
   }
 
   _closeFilmDetails() {
-    // кнопка не работает, так как элемент компонента _filmDetailsComponent не находит в боди
-    // из-за повторной инициализации карточки в списке
-    // раньше работало так(сейчас не работает)
-    // не понимаю как сделать так, чтобы закрытие попапа нормально работало
-    // this._siteBodyElement.removeChild(this._filmDetailsComponent.getElement());
-    // сделала временное решение
     this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
     this._siteBodyElement.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.CLOSE;
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._closeFilmDetails();
+    }
   }
 
   _handleCloseClick() {
