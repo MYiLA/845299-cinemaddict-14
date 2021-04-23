@@ -2,7 +2,6 @@ import FilmCard from './film-card.js';
 import AbstractView from './abstract.js';
 
 const createFilmsExtraTemplate = (data, title) => {
-
   const CARDS_COUNT = 2;
 
   const templateMultiply = () => {

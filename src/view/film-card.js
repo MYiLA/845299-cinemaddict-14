@@ -47,6 +47,9 @@ export default class FilmCard extends AbstractView {
     this._film = film;
     this._comments = comments;
     this._openClickHandler = this._openClickHandler.bind(this);
+    this._viewedClickHandler = this._viewedClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -55,9 +58,24 @@ export default class FilmCard extends AbstractView {
 
   _openClickHandler(evt) {
     evt.preventDefault();
-    // 3. А внутри абстрактного обработчика вызовем колбэк
     this._callback.openClick();
   }
+
+  _viewedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.viewedClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchlistClick();
+  }
+
 
   setOpenClickHandler(callback) {
     // 1. колбэк мы запишем во внутреннее свойство
@@ -66,5 +84,20 @@ export default class FilmCard extends AbstractView {
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._openClickHandler);
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._openClickHandler);
     this.getElement().querySelector('.film-card__comments').addEventListener('click', this._openClickHandler);
+  }
+
+  setViewedClickHandler(callback) {
+    this._callback.viewedClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this._viewedClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClick = callback;
+    this.getElement().querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this._watchlistClickHandler);
   }
 }
