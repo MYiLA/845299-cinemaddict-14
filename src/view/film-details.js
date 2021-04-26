@@ -1,4 +1,3 @@
-import NewComment from './new-comment.js';
 import AbstractView from './abstract.js';
 
 const createFilmDetailsTemplate = (film, comments) => {
@@ -30,7 +29,7 @@ const createFilmDetailsTemplate = (film, comments) => {
       return `
       <li class="film-details__comment">
         <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-angry">
+          <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
         </span>
         <div>
           <p class="film-details__comment-text">${comment.text}</p>
@@ -46,8 +45,6 @@ const createFilmDetailsTemplate = (film, comments) => {
   };
 
   const getChecked = (bln) => bln ? 'checked' : '';
-
-  const newCommentComponent = new NewComment(comments[0]);
 
   return `
   <section class="film-details">
@@ -131,8 +128,6 @@ const createFilmDetailsTemplate = (film, comments) => {
             ${commentsRender()}
           </ul>
 
-          ${newCommentComponent.getTemplate()}
-
         </section>
       </div>
     </form>
@@ -143,7 +138,7 @@ export default class FilmDetails extends AbstractView {
   constructor(film, comments) {
     super();
     this._film = film;
-    this._comments = comments;
+    this._state = comments;
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._viewedClickHandler = this._viewedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
@@ -151,12 +146,13 @@ export default class FilmDetails extends AbstractView {
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film, this._comments);
+    return createFilmDetailsTemplate(this._film, this._state);
   }
 
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
+    // console.log(this._state); //комменты в данных есть, но они не перерисовываются
   }
 
   _viewedClickHandler() {
@@ -172,9 +168,7 @@ export default class FilmDetails extends AbstractView {
   }
 
   setCloseClickHandler(callback) {
-    // 1. колбэк мы запишем во внутреннее свойство
     this._callback.closeClick = callback;
-    // 2. В addEventListener передадим абстрактный обработчик
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeClickHandler);
   }
 
@@ -193,3 +187,5 @@ export default class FilmDetails extends AbstractView {
     this.getElement().querySelector('.film-details__control-label--watchlist').addEventListener('click', this._watchlistClickHandler);
   }
 }
+
+//Пользователь может удалить произвольный комментарий нажатием на кнопку delete
