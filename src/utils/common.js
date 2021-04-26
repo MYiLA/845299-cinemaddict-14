@@ -27,3 +27,7 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1),
   ];
 };
+
+export const scrollFix = (element) => {
+  element.getElement().scrollTop = element.getElement().scrollHeight;
+};
