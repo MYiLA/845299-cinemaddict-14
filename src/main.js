@@ -1,7 +1,7 @@
 import { getRandomInteger } from './utils/common.js';
 import { getFilmPropertyCount } from './utils/film.js';
 import { render, RenderPosition } from './utils/render.js';
-import { generateFilmData } from './mock/task.js';
+import { generateFilmData } from './mock/data.js';
 
 import FilmsListPresenter from './presenter/films-list.js';
 import MenuView from './view/menu.js';
@@ -22,14 +22,14 @@ const filmsListPresenter = new FilmsListPresenter(siteMainElement);
 
 const menuViewComponent = new MenuView(data);
 
-render(siteMainElement, menuViewComponent, RenderPosition.AFTER_CHILDS);
+render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
 
 if (data.length) {
   const profileViewComponent = new ProfileView(data.length, viewedCount);
-  render(siteHeaderElement, profileViewComponent, RenderPosition.BEFORE_CHILDS);
+  render(siteHeaderElement, profileViewComponent, RenderPosition.AFTER_CHILDS);
 }
 
 const moviesCountComponent = new MoviesCountView(data.length);
-render(siteFooterStatElement, moviesCountComponent, RenderPosition.BEFORE_CHILDS);
+render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
 
 filmsListPresenter.init(data);

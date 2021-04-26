@@ -1,8 +1,8 @@
 import Abstract from '../view/abstract.js';
 
 export const RenderPosition = {
-  AFTER_CHILDS: 'afterсhilds',
   BEFORE_CHILDS: 'beforeсhilds',
+  AFTER_CHILDS: 'afterсhilds',
   AFTER_ELEMENT: 'afterelement',
   BEFORE_ELEMENT: 'beforeelement',
 };
@@ -17,10 +17,10 @@ export const render = (container, child, place) => {
   }
 
   switch (place) {
-    case RenderPosition.AFTER_CHILDS:
+    case RenderPosition.BEFORE_CHILDS:
       container.prepend(child);
       break;
-    case RenderPosition.BEFORE_CHILDS:
+    case RenderPosition.AFTER_CHILDS:
       container.append(child);
       break;
     case RenderPosition.AFTER_ELEMENT:

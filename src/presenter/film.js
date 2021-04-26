@@ -1,7 +1,9 @@
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
+import { scrollFix } from '../utils/common.js';
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
+import NewComment from '../view/new-comment.js';
 
 const Mode = {
   CLOSE: 'CLOSE',
@@ -21,6 +23,8 @@ export default class Film {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._ctrlEnterKeyDownHandler = this._ctrlEnterKeyDownHandler.bind(this);
+    this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
 
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
@@ -34,6 +38,7 @@ export default class Film {
 
     this._filmCardComponent = new FilmCardView(film, comments);
     this._filmDetailsComponent = new FilmDetailsView(film, comments);
+    this._newCommentComponent = new NewComment(),
 
     this._filmCardComponent.setOpenClickHandler(this._hangleOpenClick);
 
@@ -48,12 +53,10 @@ export default class Film {
     this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
 
     if (prevFilmCardComponent === null) {
-      render(this._filmListContainer, this._filmCardComponent, RenderPosition.BEFORE_CHILDS);
+      render(this._filmListContainer, this._filmCardComponent, RenderPosition.AFTER_CHILDS);
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
     if (this._filmListContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
@@ -61,11 +64,14 @@ export default class Film {
     remove(prevFilmCardComponent);
   }
 
-  _openFilmDetails() {  // рендеринг одного попапа FilmDetailsView
+  _openFilmDetails() {
     this._changeMode();
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
+    const commentEditWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
+    render(commentEditWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
     this._siteBodyElement.classList.add('hide-overflow');
     document.addEventListener('keydown', this._escKeyDownHandler);
+    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
     this._mode = Mode.OPEN;
   }
 
@@ -76,9 +82,11 @@ export default class Film {
   }
 
   _closeFilmDetails() {
+    this._newCommentComponent.reset();
     this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
     this._siteBodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    document.removeEventListener('keydown', this._ctrlEnterKeyDownHandler);
     this._mode = Mode.CLOSE;
   }
 
@@ -87,6 +95,25 @@ export default class Film {
       evt.preventDefault();
       this._closeFilmDetails();
     }
+  }
+
+  _ctrlEnterKeyDownHandler(evt) {
+    if (
+      (evt.ctrlKey && evt.code === 'Enter')
+      ||
+      (evt.metaKey && evt.code === 'Enter'))
+    {
+      evt.preventDefault();
+      this._newCommentComponent.setCommentSubmitHandler(this._handleCommentSubmit);
+    }
+  }
+
+  _handleCommentSubmit(state) {
+    this._comments.push(state);
+    this._changeData(this._film, this._comments);
+    this._closeFilmDetails();
+    this._openFilmDetails();
+    scrollFix(this._filmDetailsComponent.getElement());
   }
 
   _handleCloseClick() {

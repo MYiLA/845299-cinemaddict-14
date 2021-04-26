@@ -192,13 +192,17 @@ const commentAuthors = [
   'Procrastinator',
 ];
 
-const getCommentDate = () => dayjs(getRandomDate(DATE_FIRST_COMENT)).format('DD/MM/YYYY HH:mm');
+export const getRandomCommentAuthor = () => {
+  return getRandomItem(commentAuthors);
+};
+
+export const getCommentDate = () => dayjs(getRandomDate(DATE_FIRST_COMENT)).format('DD/MM/YYYY HH:mm');
 
 const generateComment = () => {
   return {
     text: getRandomItem(commentTexts), // формируется случайно на сервере, с клиента не передается
-    emotion: getRandomItem(emoticons), // список из 4 или без нее [smile, sleeping, puke, angry]
-    author: getRandomItem(commentAuthors),
+    emoji: getRandomItem(emoticons), // список из 4 или без нее [smile, sleeping, puke, angry]
+    author: getRandomCommentAuthor(),
     date: getCommentDate(), // год/месяц/день часы:минуты например 2019/12/31 23:59 приходит с сервера
   };
 };
