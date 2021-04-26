@@ -11,10 +11,6 @@ import ShowMoreView from '../view/show-more.js';
 
 export default class FilmsList {
   constructor(siteMainElement) {
-    // за основу инициализации взяла тег body. index файл не меняла.
-    // Текущее решение завязано на существующую структуру index.html.
-    // Возможно ли сделать (и нужно ли?) более унифицированное решение,
-    // чтобы верстка создавалась с нуля в любом контейнере?
     this._siteMainElement = siteMainElement;
     this._siteFilmsElement = this._siteMainElement.querySelector('.films');
     this._siteFilmsListElement = this._siteFilmsElement.querySelector('.films-list');
@@ -32,7 +28,7 @@ export default class FilmsList {
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
-  init(data) {  // метод для начала раболты модуля
+  init(data) {  // метод для начала работы модуля
     this._data = data.slice();  // борьба против мутации данных
     if (!this._data.length) {
       this._renderFilmsListEmpty();
@@ -58,7 +54,6 @@ export default class FilmsList {
   _handleFilmChange(updatedFilm, comments) {
     const updatedItem = new Map().set(updatedFilm, comments);
     this._data = updateItem(this._data, updatedItem);
-    // Невозможность удалить попап связана с инициализацией. Почему?
     this._filmPresenter[updatedFilm.id].init(updatedFilm, comments);
   }
 
@@ -90,12 +85,12 @@ export default class FilmsList {
 
   _renderFilmsTopRated() {
     const filmsTopRatedComponent = new FilmsExtraView(this._data, 'Top rated');
-    render(this._siteFilmsElement, filmsTopRatedComponent, RenderPosition.BEFORE_CHILDS);
+    render(this._siteFilmsElement, filmsTopRatedComponent, RenderPosition.AFTER_CHILDS);
   }
 
   _renderFilmsMostCommented() {
     const filmsMostCommentedComponent = new FilmsExtraView(this._data, 'Most commented');
-    render(this._siteFilmsElement, filmsMostCommentedComponent, RenderPosition.BEFORE_CHILDS);
+    render(this._siteFilmsElement, filmsMostCommentedComponent, RenderPosition.AFTER_CHILDS);
   }
 
   _handleShowMoreButtonClick() {
@@ -107,7 +102,7 @@ export default class FilmsList {
   }
 
   _renderLoadMoreButton() {
-    render(this._siteFilmsListElement, this._ShowMoreComponent, RenderPosition.BEFORE_CHILDS);
+    render(this._siteFilmsListElement, this._ShowMoreComponent, RenderPosition.AFTER_CHILDS);
     this._ShowMoreComponent.setShowClickHandler(this._handleShowMoreButtonClick);
   }
 
