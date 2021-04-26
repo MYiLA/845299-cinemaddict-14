@@ -29,5 +29,5 @@ export const updateItem = (items, update) => {
 };
 
 export const scrollFix = (element) => {
-  element.getElement().scrollTop = element.getElement().scrollHeight;
+  element.scrollTop = element.scrollHeight;
 };
