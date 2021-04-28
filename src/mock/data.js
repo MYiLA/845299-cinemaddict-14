@@ -134,14 +134,6 @@ const getReleaseDate = () => {
   return getRandomInteger(DATE_FIRST_RELEASE);
 };
 
-const getRuntime = () => {
-  const minutesTotal = getRandomInteger(MIN_RUNTIME, MAX_RUNTIME);
-  const hoursTotal = Math.floor(minutesTotal / 60);
-  const minutes = minutesTotal - hoursTotal * 60;
-
-  return `${hoursTotal}h ${minutes}m`;
-};
-
 const generateFilm = () => {
   return {
     id: nanoid(),
@@ -153,7 +145,7 @@ const generateFilm = () => {
     writers: getUniqueArr(getRandomArr(writers, MAX_WRITERS_COUNT, MIN_WRITERS_COUNT)), // от 1 до 5 уникальных значений
     actors: getUniqueArr(getRandomArr(actors, MAX_ACTORS_COUNT, MIN_ACTORS_COUNT)), // от 1 до 10 уникальных значений
     releaseDate: getReleaseDate(),
-    runtime: getRuntime(), // от 30 минут до 4 часов
+    runtime: getRandomInteger(MIN_RUNTIME, MAX_RUNTIME), // от 30 минут до 4 часов
     country: getRandomItem(countries),
     genres: getUniqueArr(getRandomArr(genres, MAX_GENRES_COUNT, MIN_GENRES_COUNT)), // 1-4 уникальных рандом значений
     desc: getRandomArr(descPhrases, MAX_LENGTH_DESC, MIN_LENGTH_DESC).join(' '), // от 1 до 5 случайных предложений из descriptions
