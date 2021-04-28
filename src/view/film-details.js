@@ -1,4 +1,8 @@
+import dayjs from 'dayjs'; // библиотека дат и времени
+import relativeTime from 'dayjs/plugin/relativeTime';
 import AbstractView from './abstract.js';
+
+dayjs.extend(relativeTime);
 
 const createFilmDetailsTemplate = (film, comments) => {
 
@@ -35,7 +39,7 @@ const createFilmDetailsTemplate = (film, comments) => {
           <p class="film-details__comment-text">${comment.text}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${comment.date}</span>
+            <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -87,7 +91,7 @@ const createFilmDetailsTemplate = (film, comments) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${film.releaseDate}</td>
+                <td class="film-details__cell">${dayjs(film.releaseDate).format('DD MMMM YYYY')}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>

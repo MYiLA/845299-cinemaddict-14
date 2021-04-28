@@ -16,8 +16,8 @@ const MAX_GENRES_COUNT = 4;
 const MIN_GENRES_COUNT = 1;
 const MAX_ACTORS_COUNT = 10;
 const MIN_ACTORS_COUNT = 1;
-const DATE_FIRST_RELEASE = '1895-03-22'; // допустим в этом году появился первый фильм
-const DATE_FIRST_COMENT = '2015-01-01'; // допустим в этом году зарелизился сайт и был написан первый коммент
+const DATE_FIRST_RELEASE = dayjs('1895-03-22').valueOf(); // допустим в этом году появился первый фильм
+const DATE_FIRST_COMENT = dayjs('2015-01-01').valueOf(); // допустим в этом году зарелизился сайт и был написан первый коммент
 
 const posters = [
   'made-for-each-other.png',
@@ -113,13 +113,6 @@ export const getRandomItem = (list) => {
   return list[randomIndex];
 };
 
-export const getRandomDate = (to, from = undefined) => {
-  const dateFrom = dayjs(from).valueOf();
-  const dateTo = dayjs(to).valueOf();
-
-  return getRandomInteger(dateTo, dateFrom);
-};
-
 export const getRandomArr = (arr, maxLength, minLength = 0) => {
   return new Array(getRandomInteger(minLength, maxLength)).fill().map(() => getRandomItem(arr));
 };
@@ -138,7 +131,7 @@ const getReleaseDate = () => {
     return null;
   }
 
-  return dayjs(getRandomDate(DATE_FIRST_RELEASE)).format('DD MMMM YYYY');
+  return getRandomInteger(DATE_FIRST_RELEASE);
 };
 
 const getRuntime = () => {
@@ -196,15 +189,17 @@ export const getRandomCommentAuthor = () => {
   return getRandomItem(commentAuthors);
 };
 
-export const getCommentDate = () => dayjs(getRandomDate(DATE_FIRST_COMENT)).format('DD/MM/YYYY HH:mm');
-
 const generateComment = () => {
   return {
     text: getRandomItem(commentTexts), // формируется случайно на сервере, с клиента не передается
     emoji: getRandomItem(emoticons), // список из 4 или без нее [smile, sleeping, puke, angry]
     author: getRandomCommentAuthor(),
-    date: getCommentDate(), // год/месяц/день часы:минуты например 2019/12/31 23:59 приходит с сервера
+    date: getRandomInteger(DATE_FIRST_COMENT),
   };
+};
+
+export const getCommentDate = () => {
+  return dayjs().valueOf();
 };
 
 export const generateFilmData = () => {
