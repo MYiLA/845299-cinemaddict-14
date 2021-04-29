@@ -3,7 +3,7 @@ import { getFilmPropertyCount } from './utils/film.js';
 import { render, RenderPosition } from './utils/render.js';
 import { generateFilmData } from './mock/data.js';
 
-import FilmsListPresenter from './presenter/films-list.js';
+import ContentPresenter from './presenter/content.js';
 import MenuView from './view/menu.js';
 import ProfileView from './view/profile.js';
 import MoviesCountView from './view/movies-count.js';
@@ -18,7 +18,7 @@ const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const siteFooterStatElement = document.querySelector('.footer__statistics');
 
-const filmsListPresenter = new FilmsListPresenter(siteMainElement);
+const contentPresenter = new ContentPresenter(siteMainElement);
 
 const menuViewComponent = new MenuView(data);
 
@@ -32,4 +32,4 @@ if (data.length) {
 const moviesCountComponent = new MoviesCountView(data.length);
 render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
 
-filmsListPresenter.init(data);
+contentPresenter.init(data);

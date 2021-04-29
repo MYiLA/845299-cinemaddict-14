@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 import AbstractView from './abstract.js';
+import { translateMinutesToHours } from '../utils/common.js';
 
 const MAX_DESC_SYMBOL = 140;
 
@@ -27,7 +28,7 @@ const createFilmCardTemplate = (film, comments) => {
     <p class="film-card__rating">${film.rating}</p>
     <p class="film-card__info">
       ${releaseDateRender()}
-      <span class="film-card__duration">${film.runtime}</span>
+      <span class="film-card__duration">${translateMinutesToHours(film.runtime)}</span>
       <span class="film-card__genre">${film.genres[0]}</span>
     </p>
     <img src="./images/posters/${film.poster}" alt="" class="film-card__poster">
