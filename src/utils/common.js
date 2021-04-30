@@ -13,7 +13,6 @@ const findIdObj = (items, update) => items.findIndex((item) => item.id === updat
 
 export const updateItem = (items, update) => {
   let index = -1;
-
   // обновить список мапов
   if (update.constructor === Map) {
     index = findIdMap(items, update);
@@ -36,7 +35,6 @@ export const updateItem = (items, update) => {
 
 export const deleteItem = (items, update) => {
   let index = undefined;
-
   // удалить мапу из списка
   if (update.constructor === Map) {
     index = findIdMap(items, update);

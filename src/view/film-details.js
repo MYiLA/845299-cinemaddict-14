@@ -6,7 +6,6 @@ import { translateMinutesToHours } from '../utils/common.js';
 dayjs.extend(relativeTime);
 
 const createFilmDetailsTemplate = (film, comments) => {
-
   const genresRender = () => {
     if (film.genres.length === 1) {
       return `
@@ -157,7 +156,6 @@ export default class FilmDetails extends AbstractView {
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
-    // console.log(this._state); //комменты в данных есть, но они не перерисовываются
   }
 
   _viewedClickHandler() {

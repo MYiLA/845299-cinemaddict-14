@@ -1,5 +1,6 @@
 import Observer from '../utils/observer.js';
-import { updateItem, deleteItem } from '../utils/common.js';
+// import { updateItem, deleteItem } from '../utils/common.js';
+import { updateItem } from '../utils/common.js';
 
 export default class Films extends Observer {
   constructor() {
@@ -20,17 +21,18 @@ export default class Films extends Observer {
     this._notify(updateType, update);
   }
 
-  deleteFilm(updateType, update) {
-    this._films = deleteItem(this._films, update);
-    this._notify(updateType);
-  }
+  // deleteFilms(updateType, update) {
+  //   this._films = deleteItem(this._films, update);
+  //   this._notify(updateType);
+  // }
 
-  addFilm(updateType, update) {
-    this._films = [
-      update,
-      ...this._films,
-    ];
+  // addFilms(updateType, update) {
+  //   this._films = [
+  //     update,
+  //     ...this._films,
+  //   ];
 
-    this._notify(updateType, update);
-  }
+  //   this._notify(updateType, update);
+  // }
+
 }

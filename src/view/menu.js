@@ -1,10 +1,10 @@
 import { getFilmPropertyCount } from '../utils/film.js';
 import AbstractView from './abstract.js';
 
-const createMenuTemplate = (data) => {
-  const watchlistCount = getFilmPropertyCount(data, 'isWatchlist');
-  const viewedCount = getFilmPropertyCount(data, 'isViewed');
-  const favoriteCount = getFilmPropertyCount(data, 'isFavorite');
+const createMenuTemplate = (films) => {
+  const watchlistCount = getFilmPropertyCount(films, 'isWatchlist');
+  const viewedCount = getFilmPropertyCount(films, 'isViewed');
+  const favoriteCount = getFilmPropertyCount(films, 'isFavorite');
 
   return `
   <nav class="main-navigation">
@@ -19,12 +19,12 @@ const createMenuTemplate = (data) => {
 };
 
 export default class Menu extends AbstractView {
-  constructor(data) {
+  constructor(films) {
     super();
-    this._data = data;
+    this._films = films;
   }
 
   getTemplate() {
-    return createMenuTemplate(this._data);
+    return createMenuTemplate(this._films);
   }
 }

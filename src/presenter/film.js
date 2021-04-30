@@ -1,5 +1,6 @@
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix } from '../utils/common.js';
+import { commentsData } from '../mock/data.js'; // не уверена, что это нужно здесь
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
@@ -16,6 +17,7 @@ export default class Film {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._commentsData = commentsData;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
@@ -30,27 +32,18 @@ export default class Film {
     this._mode = Mode.CLOSE;
   }
 
-  init(film, comments) {
+  init(film) {
     this._film = film;
-    this._comments = comments;
 
     const prevFilmCardComponent = this._filmCardComponent;
 
-    this._filmCardComponent = new FilmCardView(film, comments);
-    this._filmDetailsComponent = new FilmDetailsView(film, comments);
-    this._newCommentComponent = new NewComment(),
+    this._filmCardComponent = new FilmCardView(film);
 
     this._filmCardComponent.setOpenClickHandler(this._hangleOpenClick);
 
     this._filmCardComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-
-    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
-
-    this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
-    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
 
     if (prevFilmCardComponent === null) {
       render(this._filmListContainer, this._filmCardComponent, RenderPosition.AFTER_CHILDS);
@@ -66,6 +59,16 @@ export default class Film {
 
   _openFilmDetails() {
     this._changeMode();
+    const comments = commentsData.get(this._film.id);
+
+    this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
+    this._newCommentComponent = new NewComment();
+    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
+
+    this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
+    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
     const commentEditWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
     render(commentEditWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
@@ -82,7 +85,6 @@ export default class Film {
   }
 
   _closeFilmDetails() {
-    this._newCommentComponent.reset();
     this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
     this._siteBodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._escKeyDownHandler);
@@ -109,8 +111,14 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
-    this._comments.push(state);
-    this._changeData(this._film, this._comments);
+    this._commentsData.get(this._film.id).push(state);
+
+    this._changeData(Object.assign(
+      {},
+      this._film,
+      {
+        commentsCount: this._film.commentsCount + 1,
+      }));
     this._closeFilmDetails();
     this._openFilmDetails();
     scrollFix(this._filmDetailsComponent.getElement());
@@ -131,7 +139,7 @@ export default class Film {
         this._film,
         {
           isViewed: !this._film.isViewed,
-        }), this._comments);
+        }));
   }
 
   _handleFavoriteClick() {
@@ -141,7 +149,7 @@ export default class Film {
         this._film,
         {
           isFavorite: !this._film.isFavorite,
-        }), this._comments);
+        }));
   }
 
   _handleWatchlistClick() {
@@ -151,7 +159,7 @@ export default class Film {
         this._film,
         {
           isWatchlist: !this._film.isWatchlist,
-        }), this._comments);
+        }));
   }
 
   destroy() {

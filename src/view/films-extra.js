@@ -1,16 +1,14 @@
 import FilmCard from './film-card.js';
 import AbstractView from './abstract.js';
 
-const createFilmsExtraTemplate = (data, title) => {
+const createFilmsExtraTemplate = (films, title) => {
   const CARDS_COUNT = 2;
 
   const templateMultiply = () => {
     let result = '';
-    data.slice(0, CARDS_COUNT).forEach((element) => {
-      element.forEach((value, key) => {
-        const filmCardTemplate = new FilmCard(key, value);
-        result = `${result}${filmCardTemplate.getTemplate()}`;
-      });
+    films.slice(0, CARDS_COUNT).forEach((el) => {
+      const filmCardTemplate = new FilmCard(el);
+      result = `${result}${filmCardTemplate.getTemplate()}`;
     });
 
     return result;
@@ -28,13 +26,13 @@ const createFilmsExtraTemplate = (data, title) => {
 };
 
 export default class FilmsExtra extends AbstractView {
-  constructor(data, title) {
+  constructor(films, title) {
     super();
-    this._data = data;
+    this._films = films;
     this._title = title;
   }
 
   getTemplate() {
-    return createFilmsExtraTemplate(this._data, this._title);
+    return createFilmsExtraTemplate(this._films, this._title);
   }
 }
