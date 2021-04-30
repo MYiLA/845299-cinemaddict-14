@@ -1,17 +1,12 @@
-import { getRandomInteger } from './utils/common.js';
 import { getFilmPropertyCount } from './utils/film.js';
 import { render, RenderPosition } from './utils/render.js';
-import { generateFilmData, films } from './mock/data.js';
+import { films } from './mock/data.js';
 import FilmsModel from './model/films.js';
 
 import ContentPresenter from './presenter/content.js';
 import MenuView from './view/menu.js';
 import ProfileView from './view/profile.js';
 import MoviesCountView from './view/movies-count.js';
-
-// const MAX_FILMS_COUNT = 60;
-
-// const data = new Array(getRandomInteger(MAX_FILMS_COUNT)).fill().map(generateFilmData);
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(films);
