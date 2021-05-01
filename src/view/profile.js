@@ -1,7 +1,6 @@
 import AbstractView from './abstract.js';
 
-const createProfileTemplate = (dataLength, viewedCount) => {
-
+const createProfileTemplate = (viewedCount) => {
   const titleRender = () => {
     if (viewedCount === 0) {
       return '';
@@ -28,13 +27,12 @@ const createProfileTemplate = (dataLength, viewedCount) => {
 };
 
 export default class Profile extends AbstractView {
-  constructor(dataLength, viewedCount) {
+  constructor(viewedCount) {
     super();
-    this._dataLength = dataLength;
     this._viewedCount = viewedCount;
   }
 
   getTemplate() {
-    return createProfileTemplate(this._dataLength, this._viewedCount);
+    return createProfileTemplate(this._viewedCount);
   }
 }

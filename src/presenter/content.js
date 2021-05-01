@@ -1,19 +1,20 @@
 import { Count, SortType } from '../const.js';
 import { render, remove, RenderPosition } from '../utils/render.js';
-import { updateItem } from '../utils/common.js';
 import { sortByDate, sortByRating } from '../utils/film.js';
 
 import FilmPresenter from './film.js';
 import FilmsListView from '../view/films-list.js';
 import FilmsListEmptyView from '../view/films-list-empty.js';
+// экстра блоки
 // import FilmsExtraView from '../view/films-extra.js';
 import SortView from '../view/sort.js';
 import ShowMoreView from '../view/show-more.js';
 import ContentView from '../view/content.js';
 
 export default class Content {
-  constructor(contentContainer, filmsModel) {
+  constructor(contentContainer, filmsModel, commentsModel) {
     this._filmsModel = filmsModel;
+    this._commentsModel = commentsModel;
     this._contentContainer = contentContainer;
     this._renderedFilmsCount = Count.FILM_COUNT_STEP;
     this._filmPresenter = {};
@@ -32,14 +33,7 @@ export default class Content {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(films) {  // метод для начала работы модуля
-    this._films = films.slice();  // борьба против мутации данных
-
-    // 1. В отличии от сортировки по любому параметру,
-    // исходный порядок можно сохранить только одним способом -
-    // сохранив исходный массив:
-    this._sourcedFilms = films.slice();
-
+  init() {  // метод для начала работы модуля
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
     render(this._filmsListTitleElement, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
 
@@ -47,48 +41,38 @@ export default class Content {
   }
 
   _getFilms() {
+    switch (this._currentSortType) {
+      case SortType.DATE:
+        return this._filmsModel.getFilms().slice().sort(sortByDate);
+      case SortType.RATING:
+        return this._filmsModel.getFilms().slice().sort(sortByRating);
+    }
+
     return this._filmsModel.getFilms();
   }
 
   _renderContent() {
-    if (!this._films.length) {
+    if (!this._getFilms().length) {
       this._renderFilmsListEmpty();
       return;
     }
 
     this._renderSort();
+    // экстра блоки
     // this._renderFilmsTopRated();
     // this._renderFilmsMostCommented();
     this._renderFilmsList();
   }
 
   _renderFilmsList() {
-    this._renderFilmCards(0, Math.min(this._films.length, this._renderedFilmsCount));
+    const filmCount = this._getFilms().length;
+    const films = this._getFilms().slice(0, Math.min(filmCount, Count.FILM_COUNT_STEP));
 
-    if (this._films.length > this._renderedFilmsCount) {
+    this._renderFilmCards(films);
+
+    if (filmCount > Count.FILM_COUNT_STEP) {
       this._renderLoadMoreButton();
     }
-  }
-
-  _sortFilms(sortType) {
-    // 2. Этот исходный массив фильмов необходим,
-    // потому что для сортировки мы будем мутировать
-    // массив в свойстве _films
-
-    switch (sortType) {
-      case SortType.DATE:
-        this._films.sort(sortByDate);
-        break;
-      case SortType.RATING:
-        this._films.sort(sortByRating);
-        break;
-      default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _films исходный массив
-        this._films = this._sourcedFilms.slice();
-    }
-
-    this._currentSortType = sortType;
   }
 
   _handleSortTypeChange(sortType) {
@@ -96,7 +80,7 @@ export default class Content {
       return;
     }
 
-    this._sortFilms(sortType);
+    this._currentSortType = sortType;
     this._clearFilmsList();
     this._renderFilmsList();
   }
@@ -107,7 +91,7 @@ export default class Content {
   }
 
   _handleFilmChange(updatedFilm) {
-    this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
+    // Здесь будем вызывать обновление модели
     this._filmPresenter[updatedFilm.id].init(updatedFilm);
   }
 
@@ -118,23 +102,22 @@ export default class Content {
   }
 
   _renderFilmCard(film) {
-    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleFilmChange, this._handleModeChange);
+    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleFilmChange, this._handleModeChange, this._commentsModel);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }
 
-  _renderFilmCards(from, to) {
-    this._films
-      .slice(from, to)
-      .forEach((film) => {
-        this._renderFilmCard(film);
-      });
+  _renderFilmCards(films) {
+    films.forEach((film) => {
+      this._renderFilmCard(film);
+    });
   }
 
   _renderFilmsListEmpty() {
     render(this._filmsListTitleElement, this._filmsListEmptyComponent, RenderPosition.AFTER_ELEMENT);
   }
 
+  //экстра блоки
   // _renderFilmsTopRated() {
   //   const filmsTopRatedComponent = new FilmsExtraView(this._films, 'Top rated');
   //   render(this._contentComponent, filmsTopRatedComponent, RenderPosition.AFTER_CHILDS);
@@ -146,9 +129,13 @@ export default class Content {
   // }
 
   _handleShowMoreButtonClick() {
-    this._renderFilmCards(this._renderedFilmsCount, this._renderedFilmsCount + Count.FILM_COUNT_STEP);
-    this._renderedFilmsCount += Count.FILM_COUNT_STEP;
-    if (this._films.length <= this._renderedFilmsCount) {
+    const filmCount = this._getFilms().length;
+    const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmsCount + Count.FILM_COUNT_STEP);
+    const films = this._getFilms().slice(this._renderedFilmsCount, newRenderedFilmCount);
+    this._renderFilmCards(films);
+    this._renderedFilmsCount = newRenderedFilmCount;
+
+    if (this._renderedFilmsCount >= filmCount) {
       remove(this._showMoreComponent);
     }
   }

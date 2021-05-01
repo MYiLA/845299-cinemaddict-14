@@ -203,13 +203,14 @@ const getId = () => {
 
 // редактирую данные
 const MAX_FILMS_COUNT = 60;
+const filmsCount = getRandomInteger(MAX_FILMS_COUNT);
 
 const data = new Map;
 
 const films = [];
 const commentsData = new Map;
 
-for(let i = 0; i < getRandomInteger(MAX_FILMS_COUNT); i++) {
+for(let i = 0; i < filmsCount; i++) {
   data.set(generateFilm(), generateComments());
 }
 

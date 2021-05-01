@@ -1,6 +1,5 @@
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix } from '../utils/common.js';
-import { commentsData } from '../mock/data.js'; // не уверена, что это нужно здесь
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
@@ -12,12 +11,12 @@ const Mode = {
 };
 
 export default class Film {
-  constructor(filmListContainer, changeData, changeMode) {
+  constructor(filmListContainer, changeData, changeMode, commentsModel) {
     this._siteBodyElement = document.querySelector('body');
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
-    this._commentsData = commentsData;
+    this._commentsModel = commentsModel;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
@@ -59,7 +58,7 @@ export default class Film {
 
   _openFilmDetails() {
     this._changeMode();
-    const comments = commentsData.get(this._film.id);
+    const comments = this._commentsModel.getComments(this._film.id);
 
     this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
     this._newCommentComponent = new NewComment();
@@ -111,7 +110,7 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
-    this._commentsData.get(this._film.id).push(state);
+    this._commentsModel.addComments(this._film.id, state);
 
     this._changeData(Object.assign(
       {},
@@ -119,6 +118,7 @@ export default class Film {
       {
         commentsCount: this._film.commentsCount + 1,
       }));
+    // может есть изящнее решение вместо того, чтобы попап открывать/закрывать?
     this._closeFilmDetails();
     this._openFilmDetails();
     scrollFix(this._filmDetailsComponent.getElement());
