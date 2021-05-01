@@ -27,10 +27,13 @@ export default class Content {
     this._filmsListEmptyComponent = new FilmsListEmptyView();
     this._showMoreComponent = new ShowMoreView();
 
-    this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+
+    this._filmsModel.addObserver(this._handleModelEvent);
   }
 
   init() {  // метод для начала работы модуля
@@ -90,10 +93,22 @@ export default class Content {
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
-  _handleFilmChange(updatedFilm) {
-    // Здесь будем вызывать обновление модели
-    this._filmPresenter[updatedFilm.id].init(updatedFilm);
+  _handleViewAction(actionType, updateType, update) {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
   }
+
+  _handleModelEvent(updateType, data) {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+  }
+
 
   _handleModeChange() {
     Object
@@ -102,7 +117,7 @@ export default class Content {
   }
 
   _renderFilmCard(film) {
-    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleFilmChange, this._handleModeChange, this._commentsModel);
+    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }

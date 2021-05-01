@@ -1,6 +1,4 @@
 import Observer from '../utils/observer.js';
-// import { updateItem, deleteItem } from '../utils/common.js';
-import { updateItem } from '../utils/common.js';
 
 export default class Films extends Observer {
   constructor() {
@@ -13,26 +11,24 @@ export default class Films extends Observer {
   }
 
   getFilms() {
+    console.log('getFilms');
     return this._films;
   }
 
   updateFilms(updateType, update) {
-    this._films = updateItem(this._films, update);
+    console.log('updateFilms');
+    const index = this._films.findIndex((item) => item.id === update.id);
+
+    if (index === -1) {
+      return this._films;
+    }
+
+    this._films = [
+      ...this._films.slice(0, index),
+      update,
+      ...this._films.slice(index + 1),
+    ];
+
     this._notify(updateType, update);
   }
-
-  // deleteFilms(updateType, update) {
-  //   this._films = deleteItem(this._films, update);
-  //   this._notify(updateType);
-  // }
-
-  // addFilms(updateType, update) {
-  //   this._films = [
-  //     update,
-  //     ...this._films,
-  //   ];
-
-  //   this._notify(updateType, update);
-  // }
-
 }

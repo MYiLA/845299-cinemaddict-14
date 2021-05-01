@@ -1,5 +1,6 @@
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix } from '../utils/common.js';
+import {UserAction, UpdateType} from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
@@ -58,7 +59,8 @@ export default class Film {
 
   _openFilmDetails() {
     this._changeMode();
-    const comments = this._commentsModel.getComments(this._film.id);
+    this._commentsModel.setComments(this._film.id);
+    const comments = this._commentsModel.getComments();
 
     this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
     this._newCommentComponent = new NewComment();
@@ -110,14 +112,17 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
-    this._commentsModel.addComments(this._film.id, state);
+    this._commentsModel.addComments(state);
 
-    this._changeData(Object.assign(
-      {},
-      this._film,
-      {
-        commentsCount: this._film.commentsCount + 1,
-      }));
+    this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      Object.assign(
+        {},
+        this._film,
+        {
+          commentsCount: this._film.commentsCount + 1,
+        }));
     // может есть изящнее решение вместо того, чтобы попап открывать/закрывать?
     this._closeFilmDetails();
     this._openFilmDetails();
@@ -134,6 +139,8 @@ export default class Film {
 
   _handleViewedClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -144,6 +151,8 @@ export default class Film {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -154,6 +163,8 @@ export default class Film {
 
   _handleWatchlistClick() {
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,

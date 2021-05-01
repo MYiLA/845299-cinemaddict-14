@@ -12,8 +12,7 @@ import MoviesCountView from './view/movies-count.js';
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(films);
 
-const commentsModel = new СommentsModel();
-commentsModel.setComments(commentsData);
+const commentsModel = new СommentsModel(commentsData);
 
 const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
 
