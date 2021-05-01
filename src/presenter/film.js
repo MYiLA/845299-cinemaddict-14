@@ -21,15 +21,19 @@ export default class Film {
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleViewedClick = this._handleViewedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._ctrlEnterKeyDownHandler = this._ctrlEnterKeyDownHandler.bind(this);
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
+    this._handleModelCommentsEvent = this._handleModelCommentsEvent.bind(this);
 
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
+
+    this._commentsModel.addObserver(this._handleModelCommentsEvent);
   }
 
   init(film) {
@@ -65,6 +69,7 @@ export default class Film {
     this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
     this._newCommentComponent = new NewComment();
     this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
+    this._filmDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -112,7 +117,7 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
-    this._commentsModel.addComment(state);
+    this._commentsModel.addComment(UpdateType.MINOR, state);
 
     this._changeData(
       UserAction.UPDATE_FILM,
@@ -131,6 +136,19 @@ export default class Film {
 
   _handleCloseClick() {
     this._closeFilmDetails();
+  }
+
+  _handleDeleteClick(idComment) {
+    this._commentsModel.deleteComment(UpdateType.MINOR, idComment);
+    this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      Object.assign(
+        {},
+        this._film,
+        {
+          commentsCount: this._film.commentsCount - 1,
+        }));
   }
 
   _hangleOpenClick() {
@@ -171,6 +189,53 @@ export default class Film {
         {
           isWatchlist: !this._film.isWatchlist,
         }));
+  }
+
+  _handleModelCommentsEvent(updateType, data) {  // отдельная инструкция для комментариев
+    debugger;
+    console.log('_handleModelFilmsEvent');
+    console.log(updateType, data);
+    this._closeFilmDetails();
+    // this._openFilmDetails();
+    // this._changeMode();
+    // this._commentsModel.setComments(this._film.id);
+    // const comments = this._commentsModel.getComments();
+
+    // this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
+    // this._newCommentComponent = new NewComment();
+    // this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
+    // this._filmDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
+
+    // this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
+    // this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    // this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+
+    // this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
+    // const commentEditWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
+    // render(commentEditWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+    // this._siteBodyElement.classList.add('hide-overflow');
+    // document.addEventListener('keydown', this._escKeyDownHandler);
+    // document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
+    // this._mode = Mode.OPEN;
+    // scrollFix(this._filmDetailsComponent.getElement());
+    // общая инструкция для удаленного или добавленного комментария.
+    // возможно нужно описать функции clearComments и renderComments
+    // switch (updateType) {
+    //   case UpdateType.PATCH:
+    //     // - обновить часть списка (например, когда поменялось описание)
+    //     this._filmPresenter[data.id].init(data);
+    //     break;
+    //   case UpdateType.MINOR:
+    //     this._clearContent();
+    //     this._renderContent();
+    //     // - обновить список (например, когда задача ушла в архив)
+    //     break;
+    //   case UpdateType.MAJOR:
+    //     this._clearContent({resetRenderedFilmCount: true, resetSortType: true});
+    //     this._renderContent();
+    //     // - обновить всю доску (например, при переключении фильтра)
+    //     break;
+    // }
   }
 
   destroy() {

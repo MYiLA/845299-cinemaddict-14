@@ -31,7 +31,7 @@ const createFilmDetailsTemplate = (film, comments) => {
   const commentsRender = () => {
     return comments.map((comment) => {
       return `
-      <li class="film-details__comment">
+      <li class="film-details__comment" data-id="${comment.id}">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
         </span>
@@ -144,6 +144,7 @@ export default class FilmDetails extends AbstractView {
     this._film = film;
     this._state = comments;
     this._closeClickHandler = this._closeClickHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._viewedClickHandler = this._viewedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
@@ -156,6 +157,12 @@ export default class FilmDetails extends AbstractView {
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.tagName !== 'BUTTON') return;
+    this._callback.deleteClick(evt.path[3].dataset.id);
   }
 
   _viewedClickHandler() {
@@ -173,6 +180,11 @@ export default class FilmDetails extends AbstractView {
   setCloseClickHandler(callback) {
     this._callback.closeClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeClickHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._deleteClickHandler);
   }
 
   setViewedClickHandler(callback) {

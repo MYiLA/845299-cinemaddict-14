@@ -11,12 +11,10 @@ export default class Films extends Observer {
   }
 
   getFilms() {
-    console.log('getFilms');
     return this._films;
   }
 
   updateFilms(updateType, update) {
-    console.log('updateFilms');
     const index = this._films.findIndex((item) => item.id === update.id);
 
     if (index === -1) {

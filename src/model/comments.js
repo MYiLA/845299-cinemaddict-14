@@ -18,13 +18,12 @@ export default class Comments extends Observer {
   }
 
   getComments() {
-    console.log('getComments');
     return this._comments;
   }
 
-  deleteComment(updateType, update) {
+  deleteComment(updateType, idComment) {
     console.log('удалить коммент');
-    const index = this._comments.findIndex((item) => item.id === update.id);
+    const index = this._comments.findIndex((item) => item.id === idComment);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting item');
@@ -34,12 +33,11 @@ export default class Comments extends Observer {
       ...this._comments.slice(0, index),
       ...this._comments.slice(index + 1),
     ];
-
     this._updateData();
-    this._notify(updateType);
+    this._notify(updateType, idComment);
   }
 
-  addComment(update, updateType) {
+  addComment(updateType, update) {
     console.log('добавить коммент');
     this._comments = [
       update,

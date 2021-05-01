@@ -31,12 +31,12 @@ export default class Content {
     this._filmsListEmptyComponent = new FilmsListEmptyView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
-    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._handleModelFilmsEvent = this._handleModelFilmsEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filmsModel.addObserver(this._handleModelFilmsEvent);
   }
 
   init() {  // метод для начала работы модуля
@@ -145,10 +145,7 @@ export default class Content {
     }
   }
 
-  _handleModelEvent(updateType, data) {
-    console.log('_handleModelEvent');
-    console.log(updateType, data);
-    // наверно нужна отдельная инструкция для комментариев? или там попроще? у них же нет ни фильтров ни сортировки
+  _handleModelFilmsEvent(updateType, data) {
     // В зависимости от типа изменений решаем, что делать:
     // - обновить часть списка (например, когда поменялось описание)
     // - обновить список (например, когда задача ушла в архив)
@@ -226,16 +223,5 @@ export default class Content {
     this._showMoreComponent.setShowClickHandler(this._handleShowMoreButtonClick);
 
     render(this._filmsListElement, this._showMoreComponent, RenderPosition.AFTER_CHILDS);
-  }
-
-  _clearFilmsList() {
-    Object
-      .values(this._filmPresenter)
-      .forEach((presenter) => {
-        presenter.destroy();
-      });
-    this._filmPresenter = {};
-    this._renderedFilmCount = Count.FILM_COUNT_STEP;
-    remove(this._showMoreComponent);
   }
 }
