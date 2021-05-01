@@ -7,27 +7,27 @@ export const RenderPosition = {
   BEFORE_ELEMENT: 'beforeelement',
 };
 
-export const render = (container, child, place) => {
+export const render = (container, element, place) => {
   if (container instanceof Abstract) {
     container = container.getElement();
   }
 
-  if (child instanceof Abstract) {
-    child = child.getElement();
+  if (element instanceof Abstract) {
+    element = element.getElement();
   }
 
   switch (place) {
     case RenderPosition.BEFORE_CHILDS:
-      container.prepend(child);
+      container.prepend(element);
       break;
     case RenderPosition.AFTER_CHILDS:
-      container.append(child);
+      container.append(element);
       break;
     case RenderPosition.AFTER_ELEMENT:
-      container.after(child);
+      container.after(element);
       break;
     case RenderPosition.BEFORE_ELEMENT:
-      container.before(child);
+      container.before(element);
       break;
   }
 };
@@ -40,6 +40,11 @@ export const createElement = (template) => {
 };
 
 export const remove = (component) => {
+  // поддержим ситуацию удаления отсутствующего компонента
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error('Can remove only components');
   }

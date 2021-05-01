@@ -14,10 +14,10 @@ const createSortTemplate = (sortType) => {
 };
 
 export default class Sort extends AbstractView {
-  constructor() {
+  constructor(sortType) {
     super();
 
-    this._sortType = SortType.DEFAULT;
+    this._sortType = sortType;
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 

@@ -16,16 +16,19 @@ export default class Content {
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
     this._contentContainer = contentContainer;
-    this._renderedFilmsCount = Count.FILM_COUNT_STEP;
+    this._renderedFilmCount = Count.FILM_COUNT_STEP;
     this._filmPresenter = {};
     this._currentSortType = SortType.DEFAULT;
 
+    this._showMoreComponent = null;
+    this._sortComponent = null;
+
     this._contentComponent = new ContentView();
     this._filmsListTitleElement = this._contentComponent.getElement().querySelector('.films-list__title');
-    this._sortComponent = new SortView();
+    this._filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
+
     this._filmsListComponent = new FilmsListView();
     this._filmsListEmptyComponent = new FilmsListEmptyView();
-    this._showMoreComponent = new ShowMoreView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -55,7 +58,10 @@ export default class Content {
   }
 
   _renderContent() {
-    if (!this._getFilms().length) {
+    const films = this._getFilms();
+    const filmCount = films.length;
+
+    if (filmCount === 0) {
       this._renderFilmsListEmpty();
       return;
     }
@@ -64,17 +70,40 @@ export default class Content {
     // экстра блоки
     // this._renderFilmsTopRated();
     // this._renderFilmsMostCommented();
-    this._renderFilmsList();
+    // Теперь, когда _renderContent рендерит контент не только на старте,
+    // но и по ходу работы приложения, нужно заменить
+    // константу Count.FILM_COUNT_STEP на свойство _renderedFilmCount,
+    // чтобы в случае перерисовки сохранить N-показанных карточек
+    this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmCount)));
+    if (filmCount > this._renderedFilmCount) {
+      this._renderShowMoreButton();
+    }
   }
 
-  _renderFilmsList() {
+  _clearContent({resetRenderedFilmCount = false, resetSortType = false} = {}) {
     const filmCount = this._getFilms().length;
-    const films = this._getFilms().slice(0, Math.min(filmCount, Count.FILM_COUNT_STEP));
+    Object
+      .values(this._filmPresenter)
+      .forEach((presenter) => {
+        presenter.destroy();
+      });
+    this._filmPresenter = {};
 
-    this._renderFilmCards(films);
+    remove(this._sortComponent);
+    remove(this._showMoreComponent);
+    remove(this._filmsListEmptyComponent);
 
-    if (filmCount > Count.FILM_COUNT_STEP) {
-      this._renderLoadMoreButton();
+    if (resetRenderedFilmCount) {
+      this._renderedFilmCount = Count.FILM_COUNT_STEP;
+    } else {
+      // На случай, если перерисовка контента вызвана
+      // уменьшением количества фильмов (например удаление из списка фаворитов)
+      // нужно скорректировать число показанных фильмов
+      this._renderedFilmCount = Math.min(filmCount, this._renderedFilmCount);
+    }
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DEFAULT;
     }
   }
 
@@ -84,13 +113,17 @@ export default class Content {
     }
 
     this._currentSortType = sortType;
-    this._clearFilmsList();
-    this._renderFilmsList();
+    this._clearContent({resetRenderedFilmCount: true});
+    this._renderContent();
   }
 
   _renderSort() {  // Метод для рендеринга сортировки
-    render(this._contentComponent, this._sortComponent, RenderPosition.BEFORE_ELEMENT);
+    if (this._sortComponent !== null) {
+      this._sortComponent = null;
+    }
+    this._sortComponent = new SortView(this._currentSortType);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    render(this._contentComponent, this._sortComponent, RenderPosition.BEFORE_ELEMENT);
   }
 
   _handleViewAction(actionType, updateType, update) {
@@ -126,14 +159,17 @@ export default class Content {
         this._filmPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
+        this._clearContent();
+        this._renderContent();
         // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateType.MAJOR:
+        this._clearContent({resetRenderedFilmCount: true, resetSortType: true});
+        this._renderContent();
         // - обновить всю доску (например, при переключении фильтра)
         break;
     }
   }
-
 
   _handleModeChange() {
     Object
@@ -170,21 +206,26 @@ export default class Content {
 
   _handleShowMoreButtonClick() {
     const filmCount = this._getFilms().length;
-    const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmsCount + Count.FILM_COUNT_STEP);
-    const films = this._getFilms().slice(this._renderedFilmsCount, newRenderedFilmCount);
+    const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmCount + Count.FILM_COUNT_STEP);
+    const films = this._getFilms().slice(this._renderedFilmCount, newRenderedFilmCount);
     this._renderFilmCards(films);
-    this._renderedFilmsCount = newRenderedFilmCount;
+    this._renderedFilmCount = newRenderedFilmCount;
 
-    if (this._renderedFilmsCount >= filmCount) {
+    if (this._renderedFilmCount >= filmCount) {
       remove(this._showMoreComponent);
     }
   }
 
-  _renderLoadMoreButton() {
-    const filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
+  _renderShowMoreButton() {
+    console.log('_renderShowMoreButton');
+    if (this._showMoreComponent !== null) {
+      this._showMoreComponent = null;
+    }
 
-    render(filmsListElement, this._showMoreComponent, RenderPosition.AFTER_CHILDS);
+    this._showMoreComponent = new ShowMoreView();
     this._showMoreComponent.setShowClickHandler(this._handleShowMoreButtonClick);
+
+    render(this._filmsListElement, this._showMoreComponent, RenderPosition.AFTER_CHILDS);
   }
 
   _clearFilmsList() {
@@ -194,7 +235,7 @@ export default class Content {
         presenter.destroy();
       });
     this._filmPresenter = {};
-    this._renderedFilmsCount = Count.FILM_COUNT_STEP;
+    this._renderedFilmCount = Count.FILM_COUNT_STEP;
     remove(this._showMoreComponent);
   }
 }
