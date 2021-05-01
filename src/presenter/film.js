@@ -112,7 +112,7 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
-    this._commentsModel.addComments(state);
+    this._commentsModel.addComment(state);
 
     this._changeData(
       UserAction.UPDATE_FILM,

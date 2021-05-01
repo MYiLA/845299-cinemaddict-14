@@ -22,7 +22,7 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  deleteComments(updateType, update) {
+  deleteComment(updateType, update) {
     console.log('удалить коммент');
     const index = this._comments.findIndex((item) => item.id === update.id);
 
@@ -39,7 +39,7 @@ export default class Comments extends Observer {
     this._notify(updateType);
   }
 
-  addComments(update, updateType) {
+  addComment(update, updateType) {
     console.log('добавить коммент');
     this._comments = [
       update,
