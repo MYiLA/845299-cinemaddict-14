@@ -186,7 +186,7 @@ export default class Film {
   _renderDetailsComponent() {
     // данные у this.film опаздывают на шаг
     const comments = this._commentsModel.getComments();
-    this._film.commentsCount = comments.length; // временное решение. не понимаю, почему данные опаздывают на 1 шаг пользователя
+    // this._film.commentsCount = comments.length; // временное решение. не понимаю, почему данные опаздывают на 1 шаг пользователя
     this._filmDetailsComponent = new FilmDetailsView(this._film);// попапы множатся из-за увеличения презентеров из-за того, что я нажимаю на разные кнопки
     this._newCommentComponent = new NewComment();
     this._commentsListComponent = new CommentsListView(comments);
