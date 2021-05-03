@@ -13,16 +13,19 @@ const Mode = {
 };
 
 export default class Film {
-  constructor(filmListContainer, changeData, changeMode, commentsModel) {
+  constructor(filmListContainer, handleViewAction, changeMode, commentsModel) {
     this._siteBodyElement = document.querySelector('body');
     this._filmListContainer = filmListContainer;
-    this._changeData = changeData;
+    this._handleViewAction = handleViewAction;
     this._changeMode = changeMode;
     this._commentsModel = commentsModel;
 
     this._filmDetailsComponent = null;
+    this._commentWrapElement = null;
     this._newCommentComponent = null;
     this._commentsListComponent = null;
+    this._filmCardComponent = null;
+    this._mode = Mode.CLOSE;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
@@ -34,14 +37,9 @@ export default class Film {
     this._ctrlEnterKeyDownHandler = this._ctrlEnterKeyDownHandler.bind(this);
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
     this._handleModelCommentsEvent = this._handleModelCommentsEvent.bind(this);
-
-    this._filmCardComponent = null;
-    this._mode = Mode.CLOSE;
   }
 
   init(film) {
-    // console.log('Презентeр this._filmPresenter инициирован');
-    // console.log(film);
     this._film = film;
 
     const prevFilmCardComponent = this._filmCardComponent;
@@ -49,7 +47,6 @@ export default class Film {
     this._filmCardComponent = new FilmCardView(film);
 
     this._filmCardComponent.setOpenClickHandler(this._hangleOpenClick);
-
     this._filmCardComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -64,6 +61,10 @@ export default class Film {
     }
 
     remove(prevFilmCardComponent);
+  }
+
+  destroy() {
+    remove(this._filmCardComponent);
   }
 
   _openFilmDetails() {
@@ -103,13 +104,13 @@ export default class Film {
     {
       evt.preventDefault();
       this._newCommentComponent.setCommentSubmitHandler(this._handleCommentSubmit);
+
+      scrollFix(this._filmDetailsComponent.getElement());
     }
   }
 
   _handleCommentSubmit(state) {
-    this._commentsModel.addComment(state);
-    // todo минорный апдейт будет только в том случает, если фильм находится внутри экстраблока"самые комментируемые"
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_FILM,
       UpdateType.PATCH,
       Object.assign(
@@ -118,6 +119,9 @@ export default class Film {
         {
           commentsCount: this._film.commentsCount + 1,
         }));
+    this._handleViewAction(
+      UserAction.ADD_COMMENT,
+      null, state);
   }
 
   _handleCloseClick() {
@@ -125,8 +129,7 @@ export default class Film {
   }
 
   _handleDeleteClick(idComment) {
-    this._commentsModel.deleteComment(idComment);
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_FILM,
       UpdateType.PATCH,
       Object.assign(
@@ -135,6 +138,10 @@ export default class Film {
         {
           commentsCount: this._film.commentsCount - 1,
         }));
+
+    this._handleViewAction(
+      UserAction.DELETE_COMMENT,
+      null, idComment);
   }
 
   _hangleOpenClick() {
@@ -142,9 +149,9 @@ export default class Film {
   }
 
   _handleViewedClick() {
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -154,9 +161,9 @@ export default class Film {
   }
 
   _handleFavoriteClick() {
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
@@ -166,21 +173,15 @@ export default class Film {
   }
 
   _handleWatchlistClick() {
-    this._changeData(
+    this._handleViewAction(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._film,
         {
           isWatchlist: !this._film.isWatchlist,
         }));
-  }
-
-  _clearDetailsComponent() {
-    remove(this._filmDetailsComponent);
-    remove(this._newCommentComponent);
-    remove(this._commentsListComponent);
   }
 
   _renderDetailsComponent() {
@@ -198,29 +199,37 @@ export default class Film {
 
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
 
-    const commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
-    render(commentWrapElement, this._commentsListComponent, RenderPosition.AFTER_CHILDS);
-    render(commentWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+    this._commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container');
+    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
+    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
 
     this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     this._siteBodyElement.classList.add('hide-overflow');
     document.addEventListener('keydown', this._escKeyDownHandler);
     document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
-
-    scrollFix(this._filmDetailsComponent.getElement());
   }
 
-  _handleModelCommentsEvent() {  // отдельная инструкция для комментариев
-    this._clearDetailsComponent();
-    this._renderDetailsComponent();
-
-    // очистить список
-    // отрендерить список
-    //обновить список комментариев
+  _clearDetailsComponent() {
+    remove(this._filmDetailsComponent);
+    remove(this._newCommentComponent);
+    remove(this._commentsListComponent);
   }
 
-  destroy() {
-    remove(this._filmCardComponent);
+  _updateCommentList(data) {
+    remove(this._newCommentComponent);
+    remove(this._commentsListComponent);
+
+    this._commentsListComponent = new CommentsListView(data);
+    this._newCommentComponent = new NewComment();
+
+    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
+    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+
+    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
+  }
+
+  _handleModelCommentsEvent(data) {
+    this._updateCommentList(data);
   }
 }

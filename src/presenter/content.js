@@ -88,10 +88,10 @@ export default class Content {
         this._filmsModel.updateFilms(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update);
+        this._commentsModel.addComment(update);
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update);
+        this._commentsModel.deleteComment(update);
         break;
     }
   }

@@ -33,7 +33,7 @@ export default class Comments extends Observer {
       ...this._comments.slice(index + 1),
     ];
     this._updateData();
-    this._notify();
+    this._notify(this._comments);
   }
 
   addComment(update) {
@@ -42,6 +42,6 @@ export default class Comments extends Observer {
       ...this._comments,
     ];
     this._updateData();
-    this._notify();
+    this._notify(this._comments);
   }
 }

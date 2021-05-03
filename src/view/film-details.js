@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 import relativeTime from 'dayjs/plugin/relativeTime';
-import SmartView from './smart.js';
+import AbstractView from './abstract.js';
 import { translateMinutesToHours } from '../utils/common.js';
 
 dayjs.extend(relativeTime);
@@ -105,15 +105,13 @@ const createFilmDetailsTemplate = (film) => {
       </div>
 
       <div class="film-details__bottom-container">
-        <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.commentsCount}</span></h3>
-        </section>
+
       </div>
     </form>
   </section>`;
 };
 
-export default class FilmDetails extends SmartView {
+export default class FilmDetails extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
@@ -125,13 +123,6 @@ export default class FilmDetails extends SmartView {
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film, this._state);
-  }
-
-  restoreHandlers() {
-    this.setCloseClickHandler(this._callback.closeClick);
-    this.setViewedClickHandler(this._callback.viewedClick);
-    this.setFavoriteClickHandler(this._callback.favoriteClick);
-    this.setWatchlistClickHandler(this._callback.watchlistClick);
   }
 
   _closeClickHandler(evt) {
@@ -170,10 +161,4 @@ export default class FilmDetails extends SmartView {
     this._callback.watchlistClick = callback;
     this.getElement().querySelector('.film-details__control-label--watchlist').addEventListener('click', this._watchlistClickHandler);
   }
-
-  reset(film) {
-    this.updateState(film);
-  }
 }
-
-//Пользователь может удалить произвольный комментарий нажатием на кнопку delete

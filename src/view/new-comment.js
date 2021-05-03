@@ -1,3 +1,4 @@
+import he from 'he';
 import { getRandomCommentAuthor, getCommentDate, getId } from '../mock/data.js';
 import { scrollFix } from '../utils/common.js';
 // import dayjs from 'dayjs'; // библиотека дат и времени
@@ -26,7 +27,7 @@ const createNewCommentTemplate = (state) => {
     </div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text}</textarea>
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(text)}</textarea>
     </label>
 
     <div class="film-details__emoji-list">
