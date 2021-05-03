@@ -224,22 +224,3 @@ films.forEach((film) => {
 });
 
 export { films, commentsData, getId, getCommentDate, getRandomCommentAuthor };
-
-// const getComments = (film) => data.get(film); // получить комментарии по фильму
-// const modifiedComments = [1, 2, 3, 4, 5];
-// const modifiedFilm = films[0];
-
-// console.log(films); // список фильмов
-// console.log(data.get(modifiedFilm)); // получить из данных комментарии по фильму
-// modifiedFilm.commentsCount = modifiedComments.length; // изменить количество комментариев в фильме
-
-// for (const film of data.keys()) { // записываю свойство в данные фильма изменение по комменту(нужно передать modifiedComments и modifiedFilm)
-//   if (film.id === modifiedFilm.id) {
-//     film.commentsCount = modifiedComments.length;
-//     data.set(film, modifiedComments);
-//   }
-// }
-
-// console.log('получить из данных комментарии по modifiedFilm');
-// console.log(data.get(modifiedFilm)); // получить из данных комментарии по фильму
-// console.log(data); // доказательство, что обновление данных работает

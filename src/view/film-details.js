@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 import relativeTime from 'dayjs/plugin/relativeTime';
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import { translateMinutesToHours } from '../utils/common.js';
 
 dayjs.extend(relativeTime);
 
-const createFilmDetailsTemplate = (film, comments) => {
+const createFilmDetailsTemplate = (film) => {
   const genresRender = () => {
     if (film.genres.length === 1) {
       return `
@@ -26,26 +26,6 @@ const createFilmDetailsTemplate = (film, comments) => {
       <td class="film-details__cell">
       ${result}
     `;
-  };
-
-  const commentsRender = () => {
-    return comments.map((comment) => {
-      return `
-      <li class="film-details__comment" data-id="${comment.id}">
-        <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
-        </span>
-        <div>
-          <p class="film-details__comment-text">${comment.text}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
-            <button class="film-details__comment-delete">Delete</button>
-          </p>
-        </div>
-      </li>
-    `;
-    }).join('');
   };
 
   const getChecked = (bln) => bln ? 'checked' : '';
@@ -126,25 +106,18 @@ const createFilmDetailsTemplate = (film, comments) => {
 
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-
-          <ul class="film-details__comments-list">
-            ${commentsRender()}
-          </ul>
-
+          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.commentsCount}</span></h3>
         </section>
       </div>
     </form>
   </section>`;
 };
 
-export default class FilmDetails extends AbstractView {
-  constructor(film, comments) {
+export default class FilmDetails extends SmartView {
+  constructor(film) {
     super();
     this._film = film;
-    this._state = comments;
     this._closeClickHandler = this._closeClickHandler.bind(this);
-    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._viewedClickHandler = this._viewedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
@@ -154,15 +127,16 @@ export default class FilmDetails extends AbstractView {
     return createFilmDetailsTemplate(this._film, this._state);
   }
 
+  restoreHandlers() {
+    this.setCloseClickHandler(this._callback.closeClick);
+    this.setViewedClickHandler(this._callback.viewedClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setWatchlistClickHandler(this._callback.watchlistClick);
+  }
+
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
-  }
-
-  _deleteClickHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.tagName !== 'BUTTON') return;
-    this._callback.deleteClick(evt.path[3].dataset.id);
   }
 
   _viewedClickHandler() {
@@ -182,11 +156,6 @@ export default class FilmDetails extends AbstractView {
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeClickHandler);
   }
 
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._deleteClickHandler);
-  }
-
   setViewedClickHandler(callback) {
     this._callback.viewedClick = callback;
     this.getElement().querySelector('.film-details__control-label--watched').addEventListener('click', this._viewedClickHandler);
@@ -200,6 +169,10 @@ export default class FilmDetails extends AbstractView {
   setWatchlistClickHandler(callback) {
     this._callback.watchlistClick = callback;
     this.getElement().querySelector('.film-details__control-label--watchlist').addEventListener('click', this._watchlistClickHandler);
+  }
+
+  reset(film) {
+    this.updateState(film);
   }
 }
 

@@ -5,8 +5,6 @@ import { sortByDate, sortByRating } from '../utils/film.js';
 import FilmPresenter from './film.js';
 import FilmsListView from '../view/films-list.js';
 import FilmsListEmptyView from '../view/films-list-empty.js';
-// экстра блоки
-// import FilmsExtraView from '../view/films-extra.js';
 import SortView from '../view/sort.js';
 import ShowMoreView from '../view/show-more.js';
 import ContentView from '../view/content.js';
@@ -35,11 +33,11 @@ export default class Content {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-
-    this._filmsModel.addObserver(this._handleModelFilmsEvent);
   }
 
-  init() {  // метод для начала работы модуля
+  init() {  // метод для начала работы модул
+    this._filmsModel.addObserver(this._handleModelFilmsEvent);
+
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
     render(this._filmsListTitleElement, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
 
@@ -67,9 +65,6 @@ export default class Content {
     }
 
     this._renderSort();
-    // экстра блоки
-    // this._renderFilmsTopRated();
-    // this._renderFilmsMostCommented();
     // Теперь, когда _renderContent рендерит контент не только на старте,
     // но и по ходу работы приложения, нужно заменить
     // константу Count.FILM_COUNT_STEP на свойство _renderedFilmCount,
@@ -80,7 +75,7 @@ export default class Content {
     }
   }
 
-  _clearContent({resetRenderedFilmCount = false, resetSortType = false} = {}) {
+  _clearContent({ resetRenderedFilmCount = false, resetSortType = false } = {}) {
     const filmCount = this._getFilms().length;
     Object
       .values(this._filmPresenter)
@@ -127,7 +122,6 @@ export default class Content {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -190,17 +184,6 @@ export default class Content {
     render(this._filmsListTitleElement, this._filmsListEmptyComponent, RenderPosition.AFTER_ELEMENT);
   }
 
-  //экстра блоки
-  // _renderFilmsTopRated() {
-  //   const filmsTopRatedComponent = new FilmsExtraView(this._films, 'Top rated');
-  //   render(this._contentComponent, filmsTopRatedComponent, RenderPosition.AFTER_CHILDS);
-  // }
-
-  // _renderFilmsMostCommented() {
-  //   const filmsMostCommentedComponent = new FilmsExtraView(this._films, 'Most commented');
-  //   render(this._contentComponent, filmsMostCommentedComponent, RenderPosition.AFTER_CHILDS);
-  // }
-
   _handleShowMoreButtonClick() {
     const filmCount = this._getFilms().length;
     const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmCount + Count.FILM_COUNT_STEP);
@@ -214,7 +197,6 @@ export default class Content {
   }
 
   _renderShowMoreButton() {
-    console.log('_renderShowMoreButton');
     if (this._showMoreComponent !== null) {
       this._showMoreComponent = null;
     }

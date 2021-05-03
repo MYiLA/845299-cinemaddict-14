@@ -3,6 +3,7 @@ import { render, RenderPosition } from './utils/render.js';
 import { films, commentsData } from './mock/data.js';
 import FilmsModel from './model/films.js';
 import СommentsModel from './model/comments.js';
+import FilterModel from './model/filter.js';
 
 import ContentPresenter from './presenter/content.js';
 import MenuView from './view/menu.js';
@@ -15,6 +16,8 @@ filmsModel.setFilms(films);
 const commentsModel = new СommentsModel(commentsData);
 
 const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
+
+const filterModel = new FilterModel();
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');

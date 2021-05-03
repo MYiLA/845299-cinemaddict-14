@@ -4,6 +4,7 @@ import {UserAction, UpdateType} from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
+import CommentsListView from '../view/comments-list.js';
 import NewComment from '../view/new-comment.js';
 
 const Mode = {
@@ -19,6 +20,10 @@ export default class Film {
     this._changeMode = changeMode;
     this._commentsModel = commentsModel;
 
+    this._filmDetailsComponent = null;
+    this._newCommentComponent = null;
+    this._commentsListComponent = null;
+
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
@@ -32,11 +37,11 @@ export default class Film {
 
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
-
-    this._commentsModel.addObserver(this._handleModelCommentsEvent);
   }
 
   init(film) {
+    // console.log('Презентeр this._filmPresenter инициирован');
+    // console.log(film);
     this._film = film;
 
     const prevFilmCardComponent = this._filmCardComponent;
@@ -64,23 +69,8 @@ export default class Film {
   _openFilmDetails() {
     this._changeMode();
     this._commentsModel.setComments(this._film.id);
-    const comments = this._commentsModel.getComments();
-
-    this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
-    this._newCommentComponent = new NewComment();
-    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
-    this._filmDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
-
-    this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
-    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-
-    this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
-    const commentEditWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
-    render(commentEditWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
-    this._siteBodyElement.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._escKeyDownHandler);
-    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
+    this._commentsModel.addObserver(this._handleModelCommentsEvent);
+    this._renderDetailsComponent();
     this._mode = Mode.OPEN;
   }
 
@@ -117,21 +107,17 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
-    this._commentsModel.addComment(UpdateType.MINOR, state);
-
+    this._commentsModel.addComment(state);
+    // todo минорный апдейт будет только в том случает, если фильм находится внутри экстраблока"самые комментируемые"
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
         {
           commentsCount: this._film.commentsCount + 1,
         }));
-    // может есть изящнее решение вместо того, чтобы попап открывать/закрывать?
-    this._closeFilmDetails();
-    this._openFilmDetails();
-    scrollFix(this._filmDetailsComponent.getElement());
   }
 
   _handleCloseClick() {
@@ -139,10 +125,10 @@ export default class Film {
   }
 
   _handleDeleteClick(idComment) {
-    this._commentsModel.deleteComment(UpdateType.MINOR, idComment);
+    this._commentsModel.deleteComment(idComment);
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -158,7 +144,7 @@ export default class Film {
   _handleViewedClick() {
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -170,7 +156,7 @@ export default class Film {
   _handleFavoriteClick() {
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -182,7 +168,7 @@ export default class Film {
   _handleWatchlistClick() {
     this._changeData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._film,
@@ -191,51 +177,47 @@ export default class Film {
         }));
   }
 
-  _handleModelCommentsEvent(updateType, data) {  // отдельная инструкция для комментариев
-    debugger;
-    console.log('_handleModelFilmsEvent');
-    console.log(updateType, data);
-    this._closeFilmDetails();
-    // this._openFilmDetails();
-    // this._changeMode();
-    // this._commentsModel.setComments(this._film.id);
-    // const comments = this._commentsModel.getComments();
+  _clearDetailsComponent() {
+    remove(this._filmDetailsComponent);
+    remove(this._newCommentComponent);
+    remove(this._commentsListComponent);
+  }
 
-    // this._filmDetailsComponent = new FilmDetailsView(this._film, comments);
-    // this._newCommentComponent = new NewComment();
-    // this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
-    // this._filmDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
+  _renderDetailsComponent() {
+    // данные у this.film опаздывают на шаг
+    const comments = this._commentsModel.getComments();
+    this._film.commentsCount = comments.length; // временное решение. не понимаю, почему данные опаздывают на 1 шаг пользователя
+    this._filmDetailsComponent = new FilmDetailsView(this._film);// попапы множатся из-за увеличения презентеров из-за того, что я нажимаю на разные кнопки
+    this._newCommentComponent = new NewComment();
+    this._commentsListComponent = new CommentsListView(comments);
 
-    // this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
-    // this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    // this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
+    this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
+    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
 
-    // this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
-    // const commentEditWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
-    // render(commentEditWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
-    // this._siteBodyElement.classList.add('hide-overflow');
-    // document.addEventListener('keydown', this._escKeyDownHandler);
-    // document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
-    // this._mode = Mode.OPEN;
-    // scrollFix(this._filmDetailsComponent.getElement());
-    // общая инструкция для удаленного или добавленного комментария.
-    // возможно нужно описать функции clearComments и renderComments
-    // switch (updateType) {
-    //   case UpdateType.PATCH:
-    //     // - обновить часть списка (например, когда поменялось описание)
-    //     this._filmPresenter[data.id].init(data);
-    //     break;
-    //   case UpdateType.MINOR:
-    //     this._clearContent();
-    //     this._renderContent();
-    //     // - обновить список (например, когда задача ушла в архив)
-    //     break;
-    //   case UpdateType.MAJOR:
-    //     this._clearContent({resetRenderedFilmCount: true, resetSortType: true});
-    //     this._renderContent();
-    //     // - обновить всю доску (например, при переключении фильтра)
-    //     break;
-    // }
+    this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
+
+    const commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__comments-wrap');
+    render(commentWrapElement, this._commentsListComponent, RenderPosition.AFTER_CHILDS);
+    render(commentWrapElement, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+
+    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
+
+    this._siteBodyElement.classList.add('hide-overflow');
+    document.addEventListener('keydown', this._escKeyDownHandler);
+    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
+
+    scrollFix(this._filmDetailsComponent.getElement());
+  }
+
+  _handleModelCommentsEvent() {  // отдельная инструкция для комментариев
+    this._clearDetailsComponent();
+    this._renderDetailsComponent();
+
+    // очистить список
+    // отрендерить список
+    //обновить список комментариев
   }
 
   destroy() {
