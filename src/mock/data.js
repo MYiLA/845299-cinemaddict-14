@@ -108,16 +108,16 @@ const descPhrases = [
   'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
 ];
 
-export const getRandomItem = (list) => {
+const getRandomItem = (list) => {
   const randomIndex = getRandomInteger(0, list.length - 1);
   return list[randomIndex];
 };
 
-export const getRandomArr = (arr, maxLength, minLength = 0) => {
+const getRandomArr = (arr, maxLength, minLength = 0) => {
   return new Array(getRandomInteger(minLength, maxLength)).fill().map(() => getRandomItem(arr));
 };
 
-export const getUniqueArr = (arr) => Array.from(new Set(arr));
+const getUniqueArr = (arr) => Array.from(new Set(arr));
 
 const getRating = () => {
   const rating = MIN_RATING + Math.random() * (MAX_RATING - MIN_RATING);
@@ -177,12 +177,13 @@ const commentAuthors = [
   'Procrastinator',
 ];
 
-export const getRandomCommentAuthor = () => {
+const getRandomCommentAuthor = () => {
   return getRandomItem(commentAuthors);
 };
 
 const generateComment = () => {
   return {
+    id: nanoid(),
     text: getRandomItem(commentTexts), // формируется случайно на сервере, с клиента не передается
     emoji: getRandomItem(emoticons), // список из 4 или без нее [smile, sleeping, puke, angry]
     author: getRandomCommentAuthor(),
@@ -190,12 +191,36 @@ const generateComment = () => {
   };
 };
 
-export const getCommentDate = () => {
+const generateComments = () => new Array(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COMMENTS_COUNT)).fill().map(() => generateComment());
+
+const getCommentDate = () => {
   return dayjs().valueOf();
 };
 
-export const generateFilmData = () => {
-  return new Map()
-    .set(generateFilm(), new Array(getRandomInteger(MIN_COMMENTS_COUNT, MAX_COMMENTS_COUNT))
-      .fill().map(() => generateComment()));
+const getId = () => {
+  return nanoid();
 };
+
+// редактирую данные
+const MAX_FILMS_COUNT = 60;
+const filmsCount = getRandomInteger(MAX_FILMS_COUNT);
+
+const data = new Map;
+
+const films = [];
+const commentsData = new Map;
+
+for(let i = 0; i < filmsCount; i++) {
+  data.set(generateFilm(), generateComments());
+}
+
+for (const film of data.keys()) { // записываю свойство в фильм
+  film.commentsCount = data.get(film).length;
+  films.push(film);
+}
+
+films.forEach((film) => {
+  commentsData.set(film.id, data.get(film));
+});
+
+export { films, commentsData, getId, getCommentDate, getRandomCommentAuthor };

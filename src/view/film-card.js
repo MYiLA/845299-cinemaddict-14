@@ -4,7 +4,7 @@ import { translateMinutesToHours } from '../utils/common.js';
 
 const MAX_DESC_SYMBOL = 140;
 
-const createFilmCardTemplate = (film, comments) => {
+const createFilmCardTemplate = (film) => {
 
   const releaseDateRender = () => {
     if (!film.releaseDate) {
@@ -33,7 +33,7 @@ const createFilmCardTemplate = (film, comments) => {
     </p>
     <img src="./images/posters/${film.poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${descRender()}</p>
-    <a class="film-card__comments">${comments.length} comments</a>
+    <a class="film-card__comments">${film.commentsCount} comments</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${activeClassRender(film.isWatchlist)}" type="button">Add to watchlist</button>
       <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${activeClassRender(film.isViewed)}" type="button">Mark as watched</button>

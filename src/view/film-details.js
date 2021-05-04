@@ -5,8 +5,7 @@ import { translateMinutesToHours } from '../utils/common.js';
 
 dayjs.extend(relativeTime);
 
-const createFilmDetailsTemplate = (film, comments) => {
-
+const createFilmDetailsTemplate = (film) => {
   const genresRender = () => {
     if (film.genres.length === 1) {
       return `
@@ -27,26 +26,6 @@ const createFilmDetailsTemplate = (film, comments) => {
       <td class="film-details__cell">
       ${result}
     `;
-  };
-
-  const commentsRender = () => {
-    return comments.map((comment) => {
-      return `
-      <li class="film-details__comment">
-        <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
-        </span>
-        <div>
-          <p class="film-details__comment-text">${comment.text}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
-            <button class="film-details__comment-delete">Delete</button>
-          </p>
-        </div>
-      </li>
-    `;
-    }).join('');
   };
 
   const getChecked = (bln) => bln ? 'checked' : '';
@@ -126,24 +105,16 @@ const createFilmDetailsTemplate = (film, comments) => {
       </div>
 
       <div class="film-details__bottom-container">
-        <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-          <ul class="film-details__comments-list">
-            ${commentsRender()}
-          </ul>
-
-        </section>
       </div>
     </form>
   </section>`;
 };
 
 export default class FilmDetails extends AbstractView {
-  constructor(film, comments) {
+  constructor(film) {
     super();
     this._film = film;
-    this._state = comments;
     this._closeClickHandler = this._closeClickHandler.bind(this);
     this._viewedClickHandler = this._viewedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
@@ -157,7 +128,6 @@ export default class FilmDetails extends AbstractView {
   _closeClickHandler(evt) {
     evt.preventDefault();
     this._callback.closeClick();
-    // console.log(this._state); //комменты в данных есть, но они не перерисовываются
   }
 
   _viewedClickHandler() {
@@ -192,5 +162,3 @@ export default class FilmDetails extends AbstractView {
     this.getElement().querySelector('.film-details__control-label--watchlist').addEventListener('click', this._watchlistClickHandler);
   }
 }
-
-//Пользователь может удалить произвольный комментарий нажатием на кнопку delete

@@ -1,35 +1,41 @@
-import { getRandomInteger } from './utils/common.js';
 import { getFilmPropertyCount } from './utils/film.js';
 import { render, RenderPosition } from './utils/render.js';
-import { generateFilmData } from './mock/data.js';
+import { films, commentsData } from './mock/data.js';
+import FilmsModel from './model/films.js';
+import СommentsModel from './model/comments.js';
+import FilterModel from './model/filter.js';
 
 import ContentPresenter from './presenter/content.js';
+import FilterPresenter from './presenter/filter.js';
 import MenuView from './view/menu.js';
 import ProfileView from './view/profile.js';
 import MoviesCountView from './view/movies-count.js';
 
-const MAX_FILMS_COUNT = 60;
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(films);
+const commentsModel = new СommentsModel(commentsData);
 
-const data = new Array(getRandomInteger(MAX_FILMS_COUNT)).fill().map(generateFilmData);
+const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
 
-const viewedCount = getFilmPropertyCount(data, 'isViewed');
+const filterModel = new FilterModel();
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const siteFooterStatElement = document.querySelector('.footer__statistics');
 
-const contentPresenter = new ContentPresenter(siteMainElement);
-
-const menuViewComponent = new MenuView(data);
+const menuViewComponent = new MenuView();
 
 render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
+const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
+const filterPresenter = new FilterPresenter(menuViewComponent, filterModel, filmsModel);
 
-if (data.length) {
-  const profileViewComponent = new ProfileView(data.length, viewedCount);
+if (filmsModel.getFilms().length) {
+  const profileViewComponent = new ProfileView(viewedCount);
   render(siteHeaderElement, profileViewComponent, RenderPosition.AFTER_CHILDS);
 }
 
-const moviesCountComponent = new MoviesCountView(data.length);
+const moviesCountComponent = new MoviesCountView(filmsModel.getFilms().length);
 render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
 
-contentPresenter.init(data);
+filterPresenter.init();
+contentPresenter.init();

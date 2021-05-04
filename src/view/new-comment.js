@@ -1,4 +1,5 @@
-import { getRandomCommentAuthor, getCommentDate } from '../mock/data.js';
+import he from 'he';
+import { getRandomCommentAuthor, getCommentDate, getId } from '../mock/data.js';
 import { scrollFix } from '../utils/common.js';
 // import dayjs from 'dayjs'; // библиотека дат и времени
 import SmartView from './smart.js';
@@ -26,7 +27,7 @@ const createNewCommentTemplate = (state) => {
     </div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text}</textarea>
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(text)}</textarea>
     </label>
 
     <div class="film-details__emoji-list">
@@ -67,10 +68,6 @@ export default class NewComment extends SmartView {
     return createNewCommentTemplate(this._state);
   }
 
-  reset(comment = CLEAR_COMMENT) {
-    this.updateState(comment);
-  }
-
   _setInnerHandlers() {
     const emojiElements = this.getElement().querySelectorAll('.film-details__emoji-label');
     emojiElements.forEach((el) => {
@@ -108,6 +105,7 @@ export default class NewComment extends SmartView {
   static parseStateToData(state) {
     state = Object.assign(
       {
+        id: getId(),
         author: getRandomCommentAuthor(),
         date: getCommentDate(),
       }, state);

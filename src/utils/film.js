@@ -1,27 +1,25 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 
-export const getFilmPropertyCount = (data, nameProperty) => {
+export const getFilmPropertyCount = (films, nameProperty) => {
   let counter = 0;
-  data.forEach((element) => {
-    element.forEach((value, key) => {
-      switch (nameProperty) {
-        case 'isWatchlist':
-          if (key.isWatchlist) {
-            counter += 1;
-          }
-          break;
-        case 'isViewed':
-          if (key.isViewed) {
-            counter += 1;
-          }
-          break;
-        case 'isFavorite':
-          if (key.isFavorite) {
-            counter += 1;
-          }
-          break;
-      }
-    });
+  films.forEach((el) => {
+    switch (nameProperty) {
+      case 'isWatchlist':
+        if (el.isWatchlist) {
+          counter += 1;
+        }
+        break;
+      case 'isViewed':
+        if (el.isViewed) {
+          counter += 1;
+        }
+        break;
+      case 'isFavorite':
+        if (el.isFavorite) {
+          counter += 1;
+        }
+        break;
+    }
   });
   return counter;
 };
@@ -45,8 +43,8 @@ const getWeightForNullData = (dataA, dataB) => {
 
 // сортировка
 export const sortByDate = (film1, film2) => {
-  const date1 = film1.keys().next().value.releaseDate;
-  const date2 = film2.keys().next().value.releaseDate;
+  const date1 = film1.releaseDate;
+  const date2 = film2.releaseDate;
   const weight = getWeightForNullData(date1, date2);
 
   if (weight !== null) {
@@ -57,7 +55,7 @@ export const sortByDate = (film1, film2) => {
 };
 
 export const sortByRating = (film1, film2) => {
-  const rating1 = film1.keys().next().value.rating;
-  const rating2 = film2.keys().next().value.rating;
+  const rating1 = film1.rating;
+  const rating2 = film2.rating;
   return rating2 - rating1;
 };
