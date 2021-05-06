@@ -11,7 +11,7 @@ import ProfileView from './view/profile.js';
 import MoviesCountView from './view/movies-count.js';
 import Api from './api.js';
 
-const AUTHORIZATION = 'Basic htmlAcademy777Myila';
+const AUTHORIZATION = 'Basic eo06840ik29889a';
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 
 const filmsModel = new FilmsModel();
@@ -20,6 +20,7 @@ const commentsModel = new СommentsModel(commentsData);
 const api = new Api(END_POINT, AUTHORIZATION);
 
 api.getFilms().then((films) => {
+  console.log('для клиента');
   console.log(films);
   // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
   // а ещё на сервере используется snake_case, а у нас camelCase.
