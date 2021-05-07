@@ -1,6 +1,6 @@
 import { getFilmPropertyCount } from './utils/film.js';
-import { render, RenderPosition } from './utils/render.js';
-import { films, commentsData } from './mock/data.js';
+import { remove, render, RenderPosition } from './utils/render.js';
+import { UpdateType } from './const.js';
 import FilmsModel from './model/films.js';
 import СommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
@@ -14,41 +14,44 @@ import Api from './api.js';
 const AUTHORIZATION = 'Basic eo06840ik29889a';
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
-const commentsModel = new СommentsModel(commentsData);
-const api = new Api(END_POINT, AUTHORIZATION);
-
-api.getFilms().then((films) => {
-  console.log('для клиента');
-  console.log(films);
-  // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-  // а ещё на сервере используется snake_case, а у нас camelCase.
-  // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-  // Есть вариант получше - паттерн "Адаптер"
-});
-
-const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
-
-const filterModel = new FilterModel();
-
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const siteFooterStatElement = document.querySelector('.footer__statistics');
 
-const menuViewComponent = new MenuView();
+const api = new Api(END_POINT, AUTHORIZATION);
 
-render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
+const filmsModel = new FilmsModel();
+const commentsModel = new СommentsModel();
+const filterModel = new FilterModel();
+
+const menuViewComponent = new MenuView();
+const moviesCountEmptyComponent = new MoviesCountView(0);
+
 const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
 const filterPresenter = new FilterPresenter(menuViewComponent, filterModel, filmsModel);
 
-if (filmsModel.getFilms().length) {
-  const profileViewComponent = new ProfileView(viewedCount);
-  render(siteHeaderElement, profileViewComponent, RenderPosition.AFTER_CHILDS);
-}
 
-const moviesCountComponent = new MoviesCountView(filmsModel.getFilms().length);
-render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
+render(siteFooterStatElement, moviesCountEmptyComponent, RenderPosition.AFTER_CHILDS);
+render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
 
 filterPresenter.init();
 contentPresenter.init();
+
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+    const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
+
+    if (filmsModel.getFilms().length) {
+      const profileViewComponent = new ProfileView(viewedCount);
+      render(siteHeaderElement, profileViewComponent, RenderPosition.AFTER_CHILDS);
+    }
+
+    remove(moviesCountEmptyComponent);
+    const moviesCountComponent = new MoviesCountView(filmsModel.getFilms().length);
+    render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
+
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });

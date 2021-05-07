@@ -1,19 +1,18 @@
 import Observer from '../utils/observer.js';
 
 export default class Comments extends Observer {
-  constructor(commentsData) {
+  constructor() {
     super();
     this._comments = null;
     this._filmId = null;
-    this._commentsData = commentsData;
   }
 
   _updateData() {
-    this._commentsData.set(this._filmId, this._comments);
+    // this._commentsData.set(this._filmId, this._comments);  // вообще не надо
   }
 
   setComments(filmId) {
-    this._comments = this._commentsData.get(filmId);
+    // this._comments = this._commentsData.get(filmId); // получает и записывает комментарии по переданному id фильма
     this._filmId = filmId;
   }
 

@@ -5,6 +5,8 @@ import { filter } from '../utils/filter.js';
 
 import FilmPresenter from './film.js';
 import FilmsListView from '../view/films-list.js';
+import LoadingView from '../view/loading.js';
+import FilmsListTitleView from '../view/films-list-title';
 import FilmsListEmptyView from '../view/films-list-empty.js';
 import SortView from '../view/sort.js';
 import ShowMoreView from '../view/show-more.js';
@@ -19,16 +21,18 @@ export default class Content {
     this._renderedFilmCount = Count.FILM_COUNT_STEP;
     this._filmPresenter = {};
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._showMoreComponent = null;
     this._sortComponent = null;
 
     this._contentComponent = new ContentView();
-    this._filmsListTitleElement = this._contentComponent.getElement().querySelector('.films-list__title');
     this._filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
 
     this._filmsListComponent = new FilmsListView();
     this._filmsListEmptyComponent = new FilmsListEmptyView();
+    this._loadingComponent = new LoadingView();
+    this._filmsListTitleComponent = new FilmsListTitleView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelFilmsEvent = this._handleModelFilmsEvent.bind(this);
@@ -39,7 +43,8 @@ export default class Content {
 
   init() {  // метод для начала работы модул
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
-    render(this._filmsListTitleElement, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
+    this._renderFilmsListTitle();
+    render(this._filmsListTitleComponent, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
 
     this._filmsModel.addObserver(this._handleModelFilmsEvent);
     this._filterModel.addObserver(this._handleModelFilmsEvent);
@@ -50,6 +55,7 @@ export default class Content {
   destroy() {
     this._clearContent({ resetRenderedTaskCount: true, resetSortType: true });
 
+    remove(this._filmsListTitleComponent);
     remove(this._filmsListComponent);
     remove(this._contentComponent);
 
@@ -116,6 +122,11 @@ export default class Content {
         this._renderContent();
         // - обновить всю доску (например, при переключении фильтра)
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderContent();
+        break;
     }
   }
 
@@ -149,8 +160,16 @@ export default class Content {
     films.forEach((film) => this._renderFilmCard(film));
   }
 
+  _renderLoading() {
+    render(this._filmsListElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
+  }
+
+  _renderFilmsListTitle() {
+    render(this._filmsListElement, this._filmsListTitleComponent, RenderPosition.BEFORE_CHILDS);
+  }
+
   _renderFilmsListEmpty() {
-    render(this._filmsListTitleElement, this._filmsListEmptyComponent, RenderPosition.AFTER_ELEMENT);
+    render(this._filmsListTitleComponent, this._filmsListEmptyComponent, RenderPosition.AFTER_ELEMENT);
   }
 
   _handleShowMoreButtonClick() {
@@ -186,8 +205,10 @@ export default class Content {
       });
     this._filmPresenter = {};
 
+    remove(this._filmsListTitleComponent);
     remove(this._sortComponent);
     remove(this._showMoreComponent);
+    remove(this._loadingComponent);
     remove(this._filmsListEmptyComponent);
 
     if (resetRenderedFilmCount) {
@@ -205,6 +226,12 @@ export default class Content {
   }
 
   _renderContent() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
+    this._renderFilmsListTitle();
     const films = this._getFilms();
     const filmCount = films.length;
 
