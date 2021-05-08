@@ -54,7 +54,7 @@ export default class Film {
     this._filmCardComponent.setOpenClickHandler(this._hangleOpenClick);
     // Обратите внимание, что изменения в DOM должны происходить только после
     // успешного запроса к серверу, иначе мы получим несогласованность — ситуацию, когда интерфейс не отражает реальных данных.
-    // в таком случае надо отменить логику чекбоксов в попапе
+    // в таком случае надо переписать логику чекбоксов в попапе
     this._filmCardComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
