@@ -1,20 +1,20 @@
+import dayjs from 'dayjs'; // библиотека дат и времени
 import Observer from '../utils/observer.js';
 
 export default class Comments extends Observer {
-  constructor(commentsData) {
+  constructor() {
     super();
-    this._comments = null;
+    this._comments = [];
     this._filmId = null;
-    this._commentsData = commentsData;
   }
 
   _updateData() {
-    this._commentsData.set(this._filmId, this._comments);
+    // this._commentsData.set(this._filmId, this._comments);  // вообще не надо
   }
 
-  setComments(filmId) {
-    this._comments = this._commentsData.get(filmId);
-    this._filmId = filmId;
+  setComments(updateType, comments) {
+    this._comments = comments.slice(); // получает и записывает комментарии по переданному id фильма
+    this._notify(updateType);
   }
 
   getComments() {
@@ -43,5 +43,37 @@ export default class Comments extends Observer {
     ];
     this._updateData();
     this._notify(this._comments);
+  }
+
+  static adaptToClient(comments) {
+    const adaptedComments = Object.assign(
+      {},
+      comments,
+      {
+        date: dayjs(comments.date).valueOf(),
+        text: comments.comment,
+        emoji: comments.emotion,
+      });
+
+    delete adaptedComments.comment;
+    delete adaptedComments.emotion;
+
+    return adaptedComments;
+  }
+
+  static adaptToServer(comments) {
+    const adaptedComments = Object.assign(
+      {},
+      comments,
+      {
+        date: dayjs(comments.date).toISOString(),
+        comment: comments.text,
+        emotion: comments.emoji,
+      });
+
+    delete adaptedComments.text;
+    delete adaptedComments.emoji;
+
+    return adaptedComments;
   }
 }
