@@ -1,5 +1,5 @@
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
-import { scrollFix } from '../utils/common.js';
+import { scrollFix, removeItemOnce } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
@@ -76,20 +76,22 @@ export default class Film {
   }
 
   _openFilmDetails() {
+    // console.log('_openFilmDetails()');
     this._changeMode();
+    this._renderDetailsComponent();
+    this._mode = Mode.OPEN;
+    this._commentsModel.addObserver(this._handleModelCommentsEvent);
 
     this._api.getComments(this._film.id)
       .then((comments) => { // комменты пришли
         this._commentsModel.setComments(UpdateType.INIT, comments);
+        this._renderCommentsList();
       })
       .catch(() => { // комменты не пришли
         this._commentsModel.setComments(UpdateType.INIT, []);
+        this._renderCommentsList();
       });
-
-    this._commentsModel.addObserver(this._handleModelCommentsEvent);
     // попап должен рендериться и без комментариев. На месте комментариев должен появляться лоадинг и ошибка
-    this._renderDetailsComponent();
-    this._mode = Mode.OPEN;
   }
 
   resetView() {
@@ -99,6 +101,8 @@ export default class Film {
   }
 
   _closeFilmDetails() {
+    // console.log('_closeFilmDetails()');
+    this._commentsModel.removeObserver(this._handleModelCommentsEvent);
     this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
     this._siteBodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this._escKeyDownHandler);
@@ -128,17 +132,10 @@ export default class Film {
 
   _handleCommentSubmit(state) {
     this._handleViewAction(
-      UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
-      Object.assign( // возможно теперь не нужно вручную апдейтить количество комментариев фильма? а послать сигнал на обновление данных?
-        {},
-        this._film,
-        {
-          commentsCount: this._film.commentsCount + 1,
-        }));
-    this._handleViewAction(
       UserAction.ADD_COMMENT,
-      UpdateType.MAJOR, state, this._film.id);
+      UpdateType.PATCH,
+      state,
+      this._film);
   }
 
   _handleCloseClick() {
@@ -147,18 +144,15 @@ export default class Film {
 
   _handleDeleteClick(idComment) {
     this._handleViewAction(
-      UserAction.UPDATE_FILM,
+      UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
+      idComment,
       Object.assign(
         {},
         this._film,
         {
-          commentsCount: this._film.commentsCount - 1,
+          comments: removeItemOnce(this._film.comments, idComment),
         }));
-
-    this._handleViewAction(
-      UserAction.DELETE_COMMENT,
-      UpdateType.MAJOR, idComment);
   }
 
   _hangleOpenClick() {
@@ -214,8 +208,6 @@ export default class Film {
     this._commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container');
 
     this._siteBodyElement.classList.add('hide-overflow');
-
-    this._renderCommentsList();
   }
 
   //возможно это не нужно. Нужно подумать, как избежать проблем с попапом
@@ -226,7 +218,7 @@ export default class Film {
     remove(this._commentsListComponent);
   }
 
-  _updateCommentList(data) {
+  _updateCommentList(data) { // нужно ли?
     remove(this._newCommentComponent);
     remove(this._commentsListComponent);
 
@@ -260,16 +252,14 @@ export default class Film {
     remove(this._loadingComponent);
   }
 
-  _handleModelCommentsEvent(updateType, data) {
+  _handleModelCommentsEvent(updateType, data) { // подходим к тому, что для комментариев не нужен тип перерисовки
     switch (updateType) {
-      case UpdateType.MAJOR:
-        this._updateCommentList(data);
-        break;
       case UpdateType.INIT:
         this._isCommentsLoading = false;
         remove(this._loadingComponent);
-        this._renderCommentsList();
         break;
+      default:
+        this._updateCommentList(data); // обновление комментов при любом типе апдейта кроме инита
     }
   }
 

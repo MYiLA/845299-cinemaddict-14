@@ -2,7 +2,7 @@ import dayjs from 'dayjs'; // библиотека дат и времени
 import he from 'he';
 import SmartView from './smart.js';
 
-const createCommentsListTemplate = (state) => {
+const createCommentsListTemplate = (state) => { // отрисовались до того, как обновился сервер
   const createComments = () => {
     return state.map((comment) => {
       return `

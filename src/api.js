@@ -50,7 +50,12 @@ export default class Api {
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON)
-      .then(CommentsModel.adaptToClient);
+      .then((data) => {
+        return ({
+          film: FilmsModel.adaptToClient(data.movie),
+          comments: CommentsModel.adaptToClient(data.comments),
+        });
+      });
   }
 
   deleteComment(commentId) {

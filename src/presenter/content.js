@@ -42,7 +42,7 @@ export default class Content {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init() {  // метод для начала работы модул
+  init() {  // метод для начала работы модуля
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
     this._renderFilmsListTitle();
     render(this._filmsListTitleComponent, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
@@ -85,7 +85,7 @@ export default class Content {
       .forEach((presenter) => presenter.resetView());
   }
 
-  _handleViewAction(actionType, updateType, update, filmId) {
+  _handleViewAction(actionType, updateType, update, film) {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -95,11 +95,11 @@ export default class Content {
         this._api.updateFilm(update).then((response) => {
           this._filmsModel.updateFilms(updateType, response);
         });
-        this._filmsModel.updateFilms(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._api.addComment(filmId, update).then((response) => {
-          this._commentsModel.addComment(updateType, response);
+        this._api.addComment(film.id, update).then((response) => {
+          this._commentsModel.addComment(updateType, response.comments);
+          this._filmsModel.updateFilms(updateType, response.film);
         });
         break;
       case UserAction.DELETE_COMMENT:
@@ -109,6 +109,7 @@ export default class Content {
           // ведь что можно вернуть при удалении задачи?
           // Поэтому в модель мы всё также передаем update
           this._commentsModel.deleteComment(updateType, update);
+          this._filmsModel.updateFilms(updateType, film);
         });
         break;
     }
