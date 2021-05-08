@@ -1,5 +1,4 @@
 import he from 'he';
-import { getRandomCommentAuthor, getCommentDate, getId } from '../mock/data.js';
 import { scrollFix } from '../utils/common.js';
 // import dayjs from 'dayjs'; // библиотека дат и времени
 import SmartView from './smart.js';
@@ -98,18 +97,7 @@ export default class NewComment extends SmartView {
   setCommentSubmitHandler(callback) {
     this._callback.commentSubmit = callback;
     if (this._state.emoji) {
-      this._callback.commentSubmit(NewComment.parseStateToData(this._state));
+      this._callback.commentSubmit(this._state);
     }
-  }
-
-  static parseStateToData(state) {
-    state = Object.assign(
-      {
-        id: getId(),
-        author: getRandomCommentAuthor(),
-        date: getCommentDate(),
-      }, state);
-
-    return state;
   }
 }
