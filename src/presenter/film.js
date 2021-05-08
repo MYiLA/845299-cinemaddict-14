@@ -1,10 +1,11 @@
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix } from '../utils/common.js';
-import {UserAction, UpdateType} from '../const.js';
+import { UserAction, UpdateType } from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 import CommentsListView from '../view/comments-list.js';
+import LoadingView from '../view/loading.js';
 import NewComment from '../view/new-comment.js';
 
 const Mode = {
@@ -13,12 +14,13 @@ const Mode = {
 };
 
 export default class Film {
-  constructor(filmListContainer, handleViewAction, changeMode, commentsModel) {
+  constructor(filmListContainer, handleViewAction, changeMode, commentsModel, api) {
     this._siteBodyElement = document.querySelector('body');
     this._filmListContainer = filmListContainer;
     this._handleViewAction = handleViewAction;
     this._changeMode = changeMode;
     this._commentsModel = commentsModel;
+    this._api = api;
 
     this._filmDetailsComponent = null;
     this._commentWrapElement = null;
@@ -26,6 +28,9 @@ export default class Film {
     this._commentsListComponent = null;
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
+
+    this._loadingComponent = new LoadingView();
+    this._isCommentsLoading = true;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
     this._handleCloseClick = this._handleCloseClick.bind(this);
@@ -47,6 +52,9 @@ export default class Film {
     this._filmCardComponent = new FilmCardView(film);
 
     this._filmCardComponent.setOpenClickHandler(this._hangleOpenClick);
+    // Обратите внимание, что изменения в DOM должны происходить только после
+    // успешного запроса к серверу, иначе мы получим несогласованность — ситуацию, когда интерфейс не отражает реальных данных.
+    // в таком случае надо отменить логику чекбоксов в попапе
     this._filmCardComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -69,8 +77,17 @@ export default class Film {
 
   _openFilmDetails() {
     this._changeMode();
-    this._commentsModel.setComments(this._film.id);
+
+    this._api.getComments(this._film.id)
+      .then((comments) => { // комменты пришли
+        this._commentsModel.setComments(UpdateType.INIT, comments);
+      })
+      .catch(() => { // комменты не пришли
+        this._commentsModel.setComments(UpdateType.INIT, []);
+      });
+
     this._commentsModel.addObserver(this._handleModelCommentsEvent);
+    // попап должен рендериться и без комментариев. На месте комментариев должен появляться лоадинг и ошибка
     this._renderDetailsComponent();
     this._mode = Mode.OPEN;
   }
@@ -185,31 +202,24 @@ export default class Film {
   }
 
   _renderDetailsComponent() {
-    // данные у this.film опаздывают на шаг
-    const comments = this._commentsModel.getComments();
-    // this._film.commentsCount = comments.length; // временное решение. не понимаю, почему данные опаздывают на 1 шаг пользователя
-    this._filmDetailsComponent = new FilmDetailsView(this._film);// попапы множатся из-за увеличения презентеров из-за того, что я нажимаю на разные кнопки
-    this._newCommentComponent = new NewComment();
-    this._commentsListComponent = new CommentsListView(comments);
+    this._filmDetailsComponent = new FilmDetailsView(this._film);
 
     this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
     this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    document.addEventListener('keydown', this._escKeyDownHandler);
 
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
-
     this._commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container');
-    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
-    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
-
-    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     this._siteBodyElement.classList.add('hide-overflow');
-    document.addEventListener('keydown', this._escKeyDownHandler);
-    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
+
+    this._renderCommentsList();
   }
 
+  //возможно это не нужно. Нужно подумать, как избежать проблем с попапом
+  // в списках при удалении его фильма из этого списка
   _clearDetailsComponent() {
     remove(this._filmDetailsComponent);
     remove(this._newCommentComponent);
@@ -229,7 +239,41 @@ export default class Film {
     this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
   }
 
-  _handleModelCommentsEvent(data) {
-    this._updateCommentList(data);
+  _renderCommentsList () {
+    if (this._isCommentsLoading) {
+      this._renderCommentsLoading();
+      return;
+    }
+
+    const comments = this._commentsModel.getComments();
+    this._newCommentComponent = new NewComment();
+    this._commentsListComponent = new CommentsListView(comments);
+
+    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
+    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+
+    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
+    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
+  }
+
+  _clearCommentsList() { // наверно это не нужно
+    remove(this._loadingComponent);
+  }
+
+  _handleModelCommentsEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.MAJOR:
+        this._updateCommentList(data);
+        break;
+      case UpdateType.INIT:
+        this._isCommentsLoading = false;
+        remove(this._loadingComponent);
+        this._renderCommentsList();
+        break;
+    }
+  }
+
+  _renderCommentsLoading() {
+    render(this._commentWrapElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
   }
 }

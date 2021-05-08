@@ -13,10 +13,11 @@ import ShowMoreView from '../view/show-more.js';
 import ContentView from '../view/content.js';
 
 export default class Content {
-  constructor(contentContainer, filmsModel, commentsModel, filterModel) {
+  constructor(contentContainer, filmsModel, commentsModel, filterModel, api) {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._commentsModel = commentsModel;
+    this._api = api;
     this._contentContainer = contentContainer;
     this._renderedFilmCount = Count.FILM_COUNT_STEP;
     this._filmPresenter = {};
@@ -91,6 +92,9 @@ export default class Content {
     // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilms(updateType, response);
+        });
         this._filmsModel.updateFilms(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
@@ -151,7 +155,7 @@ export default class Content {
   }
 
   _renderFilmCard(film) {
-    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel);
+    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._api);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }

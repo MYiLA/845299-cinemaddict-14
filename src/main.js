@@ -27,7 +27,7 @@ const filterModel = new FilterModel();
 const menuViewComponent = new MenuView();
 const moviesCountEmptyComponent = new MoviesCountView(0);
 
-const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
+const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel, api);
 const filterPresenter = new FilterPresenter(menuViewComponent, filterModel, filmsModel);
 
 
@@ -40,6 +40,7 @@ contentPresenter.init();
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
+    // поместить сюда обработчик меню, чтобы не перейти на статистику до загрузки данных? Возможно это не нужно киноману
     const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
 
     if (filmsModel.getFilms().length) {
@@ -54,4 +55,5 @@ api.getFilms()
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    // поместить сюда обработчик меню, чтобы не перейти на статистику до загрузки данных? Возможно это не нужно киноману
   });
