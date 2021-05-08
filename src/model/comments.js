@@ -8,10 +8,6 @@ export default class Comments extends Observer {
     this._filmId = null;
   }
 
-  _updateData() {
-    // this._commentsData.set(this._filmId, this._comments);  // вообще не надо
-  }
-
   setComments(updateType, comments) {
     this._comments = comments.slice(); // получает и записывает комментарии по переданному id фильма
     this._notify(updateType);
@@ -21,7 +17,7 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  deleteComment(idComment) {
+  deleteComment(updateType, idComment) {
     const index = this._comments.findIndex((item) => item.id === idComment);
 
     if (index === -1) {
@@ -32,31 +28,31 @@ export default class Comments extends Observer {
       ...this._comments.slice(0, index),
       ...this._comments.slice(index + 1),
     ];
-    this._updateData();
-    this._notify(this._comments);
+
+    this._notify(updateType, this._comments);
   }
 
-  addComment(update) {
-    this._comments = [
-      update,
-      ...this._comments,
-    ];
-    this._updateData();
-    this._notify(this._comments);
+  addComment(updateType, update) {
+    this._comments = update;
+    this._notify(updateType, this._comments);
   }
 
-  static adaptToClient(comments) {
-    const adaptedComments = Object.assign(
-      {},
-      comments,
-      {
-        date: dayjs(comments.date).valueOf(),
-        text: comments.comment,
-        emoji: comments.emotion,
-      });
+  static adaptToClient(data) {
+    const comments = data.comments ? data.comments : data;
 
-    delete adaptedComments.comment;
-    delete adaptedComments.emotion;
+    const adaptedComments = comments.map((comment) => {
+      const adaptedComment = Object.assign(
+        {},
+        comment,
+        {
+          date: dayjs(comment.date).valueOf(),
+          text: comment.comment,
+          emoji: comment.emotion,
+        });
+      delete adaptedComment.comment;
+      delete adaptedComment.emotion;
+      return adaptedComment;
+    });
 
     return adaptedComments;
   }
@@ -66,7 +62,6 @@ export default class Comments extends Observer {
       {},
       comments,
       {
-        date: dayjs(comments.date).toISOString(),
         comment: comments.text,
         emotion: comments.emoji,
       });

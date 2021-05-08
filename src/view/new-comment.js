@@ -90,7 +90,7 @@ export default class NewComment extends SmartView {
   _textInputHandler(evt) {
     evt.preventDefault();
     this.updateState({
-      text: evt.target.value,
+      text: evt.target.value, // если отправить пустой коммент со смайлом - возникает ошибка. Нужно дать возможность отправлять один смайлик без текста
     }, true);
   }
 

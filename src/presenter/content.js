@@ -85,7 +85,7 @@ export default class Content {
       .forEach((presenter) => presenter.resetView());
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, update, filmId) {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -98,10 +98,18 @@ export default class Content {
         this._filmsModel.updateFilms(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(update);
+        this._api.addComment(filmId, update).then((response) => {
+          this._commentsModel.addComment(updateType, response);
+        });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(update);
+        this._api.deleteComment(update).then(() => {
+          // Обратите внимание, метод удаления задачи на сервере
+          // ничего не возвращает. Это и верно,
+          // ведь что можно вернуть при удалении задачи?
+          // Поэтому в модель мы всё также передаем update
+          this._commentsModel.deleteComment(updateType, update);
+        });
         break;
     }
   }

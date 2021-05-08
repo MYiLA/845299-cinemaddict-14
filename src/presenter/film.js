@@ -130,7 +130,7 @@ export default class Film {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
       UpdateType.PATCH,
-      Object.assign(
+      Object.assign( // возможно теперь не нужно вручную апдейтить количество комментариев фильма? а послать сигнал на обновление данных?
         {},
         this._film,
         {
@@ -138,7 +138,7 @@ export default class Film {
         }));
     this._handleViewAction(
       UserAction.ADD_COMMENT,
-      null, state);
+      UpdateType.MAJOR, state, this._film.id);
   }
 
   _handleCloseClick() {
@@ -158,7 +158,7 @@ export default class Film {
 
     this._handleViewAction(
       UserAction.DELETE_COMMENT,
-      null, idComment);
+      UpdateType.MAJOR, idComment);
   }
 
   _hangleOpenClick() {
