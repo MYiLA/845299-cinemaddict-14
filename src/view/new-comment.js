@@ -10,7 +10,7 @@ const CLEAR_COMMENT = {
 
 const createNewCommentTemplate = (state) => {
 
-  const {emoji, text} = state;
+  const { emoji, text, isDisabled } = state;
   const emojiRender = () => {
 
     if (!emoji) {
@@ -26,26 +26,26 @@ const createNewCommentTemplate = (state) => {
     </div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(text)}</textarea>
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''}>${he.encode(text)}</textarea>
     </label>
 
     <div class="film-details__emoji-list">
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${(emoji === 'smile') ? 'checked' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${(emoji === 'smile') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="film-details__emoji-label" for="emoji-smile">
         <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${(emoji === 'sleeping') ? 'checked' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${(emoji === 'sleeping') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="film-details__emoji-label" for="emoji-sleeping">
         <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${(emoji === 'puke') ? 'checked' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${(emoji === 'puke') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="film-details__emoji-label" for="emoji-puke">
         <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${(emoji === 'angry') ? 'checked' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${(emoji === 'angry') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="film-details__emoji-label" for="emoji-angry">
         <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
       </label>
@@ -56,7 +56,7 @@ const createNewCommentTemplate = (state) => {
 export default class NewComment extends SmartView {
   constructor(comment = CLEAR_COMMENT) {
     super();
-    this._state = comment;
+    this._state = NewComment.parseCommentsToState(comment);
     this._emojiToggleHandler = this._emojiToggleHandler.bind(this);
     this._textInputHandler = this._textInputHandler.bind(this);
 
@@ -90,14 +90,28 @@ export default class NewComment extends SmartView {
   _textInputHandler(evt) {
     evt.preventDefault();
     this.updateState({
-      text: evt.target.value, // если отправить пустой коммент со смайлом - возникает ошибка. Нужно дать возможность отправлять один смайлик без текста
+      text: evt.target.value, // если отправить пустой коммент со смайлом - возникает ошибка. пустой комментарий не отправлять
     }, true);
   }
 
   setCommentSubmitHandler(callback) {
     this._callback.commentSubmit = callback;
     if (this._state.emoji) {
-      this._callback.commentSubmit(this._state);
+      this._callback.commentSubmit(NewComment.parseStateToComments(this._state));
     }
+  }
+
+  static parseCommentsToState(comment) {
+    return Object.assign(
+      {},
+      comment,
+      {
+        isDisabled: false,
+      });
+  }
+
+  static parseStateToComments(state) {
+    delete state.isDisabled;
+    return state;
   }
 }

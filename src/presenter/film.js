@@ -14,6 +14,13 @@ const Mode = {
   OPEN: 'OPEN',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING_SAVING: 'ABORTING_SAVING',
+  ABORTING_DELETING: 'ABORTING_DELETING',
+};
+
 export default class Film {
   constructor(filmListContainer, handleViewAction, changeMode, commentsModel, api) {
     this._siteBodyElement = document.querySelector('body');
@@ -78,8 +85,46 @@ export default class Film {
     remove(prevFilmCardComponent);
   }
 
-  destroy() {
+  destroy() { // нужно?
     remove(this._filmCardComponent);
+  }
+
+  setViewStateComment(state, idComment) {
+    const updateForm = (isDisabled) => {
+      this._newCommentComponent.updateState({
+        isDisabled,
+      });
+    };
+
+    const updateComments = (isDisabled, isDeleting) => {
+      this._commentsListComponent.updateState({ // апдейт нужен только одному комментарию.
+        isDisabled,
+        isDeleting,
+      }, idComment);
+      this._renderNewCommentComponent();
+    };
+
+    switch (state) {
+      case State.SAVING:
+        updateForm(true);
+        break;
+      case State.DELETING: // возможно тут нужен id комментария (чтобы понять какой именно задизейблить) + список комментов сделать смарт объектом
+        updateComments(true, true);
+        break;
+      case State.ABORTING_SAVING:
+        this._newCommentComponent.shake(updateForm(false));
+        break;
+      case State.ABORTING_DELETING:
+        updateComments(false, false);
+        break;
+    }
+  }
+
+  setAborting() {
+    this._filmCardComponent.shake();
+    if (this._filmControlsComponent) {
+      this._filmControlsComponent.shake();
+    }
   }
 
   _openFilmDetails() {
@@ -231,11 +276,10 @@ export default class Film {
     }
 
     const comments = this._commentsModel.getComments();
-    this._newCommentComponent = new NewComment();
-    this._commentsListComponent = new CommentsListView(comments);
 
+    this._commentsListComponent = new CommentsListView(comments);
     render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
-    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+    this._renderNewCommentComponent();
 
     this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
     document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
@@ -245,6 +289,11 @@ export default class Film {
     remove(this._newCommentComponent);
     remove(this._commentsListComponent);
     document.removeEventListener('keydown', this._ctrlEnterKeyDownHandler);
+  }
+
+  _renderNewCommentComponent() {
+    this._newCommentComponent = new NewComment();
+    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
   }
 
   _updateFilmControls() {

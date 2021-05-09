@@ -6,18 +6,24 @@ import { translateMinutesToHours } from '../utils/common.js';
 dayjs.extend(relativeTime);
 
 const createFilmDetailsTemplate = (film) => {
+  const {
+    desc, ageRating, releaseDate, title, titleOriginal,
+    rating, runtime, genres, director,
+    poster, writers, actors, country,
+  } = film;
+
   const genresRender = () => {
-    if (film.genres.length === 1) {
+    if (genres.length === 1) {
       return `
         <td class="film-details__term">Genre</td>
         <td class="film-details__cell">
-        ${film.genres[0]}
+        ${genres[0]}
       `;
     }
 
     let result = '';
 
-    film.genres.forEach((element) => {
+    genres.forEach((element) => {
       result += `<span class="film-details__genre">${element}</span>`;
     });
 
@@ -37,47 +43,47 @@ const createFilmDetailsTemplate = (film) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="${film.poster}" alt="">
+            <img class="film-details__poster-img" src="${poster}" alt="">
 
-            <p class="film-details__age">${film.ageRating}+</p>
+            <p class="film-details__age">${ageRating}+</p>
           </div>
 
           <div class="film-details__info">
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
-                <h3 class="film-details__title">${film.title}</h3>
-                <p class="film-details__title-original">Original: ${film.titleOriginal}</p>
+                <h3 class="film-details__title">${title}</h3>
+                <p class="film-details__title-original">Original: ${titleOriginal}</p>
               </div>
 
               <div class="film-details__rating">
-                <p class="film-details__total-rating">${film.rating}</p>
+                <p class="film-details__total-rating">${rating}</p>
               </div>
             </div>
 
             <table class="film-details__table">
               <tr class="film-details__row">
                 <td class="film-details__term">Director</td>
-                <td class="film-details__cell">${film.director}</td>
+                <td class="film-details__cell">${director}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">${film.writers.join(', ')}</td>
+                <td class="film-details__cell">${writers.join(', ')}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">${film.actors.join(', ')}</td>
+                <td class="film-details__cell">${actors.join(', ')}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${dayjs(film.releaseDate).format('DD MMMM YYYY')}</td>
+                <td class="film-details__cell">${dayjs(releaseDate).format('DD MMMM YYYY')}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${translateMinutesToHours(film.runtime)}</td>
+                <td class="film-details__cell">${translateMinutesToHours(runtime)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
-                <td class="film-details__cell">${film.country}</td>
+                <td class="film-details__cell">${country}</td>
               </tr>
               <tr class="film-details__row">
                   ${genresRender()}
@@ -85,7 +91,7 @@ const createFilmDetailsTemplate = (film) => {
             </table>
 
             <p class="film-details__film-description">
-              ${film.desc}
+              ${desc}
             </p>
           </div>
         </div>
