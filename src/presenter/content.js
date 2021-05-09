@@ -104,10 +104,7 @@ export default class Content {
         break;
       case UserAction.DELETE_COMMENT:
         this._api.deleteComment(update).then(() => {
-          // Обратите внимание, метод удаления задачи на сервере
-          // ничего не возвращает. Это и верно,
-          // ведь что можно вернуть при удалении задачи?
-          // Поэтому в модель мы всё также передаем update
+          // метод удаления ничего не возвращает
           this._commentsModel.deleteComment(updateType, update);
           this._filmsModel.updateFilms(updateType, film);
         });
@@ -122,10 +119,12 @@ export default class Content {
     // - обновить всю доску (например, при переключении фильтра)
     switch (updateType) {
       case UpdateType.PATCH:
+        console.log('UpdateType.PATCH');
         // - обновить часть списка (например, когда поменялось описание)
         this._filmPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
+        console.log('UpdateType.MINOR');
         this._clearContent();
         this._renderContent();
         // - обновить список (например, когда задача ушла в архив)

@@ -4,6 +4,7 @@ import { UserAction, UpdateType } from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
+import FilmControlsView from '../view/film-controls.js';
 import CommentsListView from '../view/comments-list.js';
 import LoadingView from '../view/loading.js';
 import NewComment from '../view/new-comment.js';
@@ -24,8 +25,10 @@ export default class Film {
 
     this._filmDetailsComponent = null;
     this._commentWrapElement = null;
+    this._topContainer = null;
     this._newCommentComponent = null;
     this._commentsListComponent = null;
+    this._filmControlsComponent = null;
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
 
@@ -59,6 +62,10 @@ export default class Film {
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
 
+    if (this._filmControlsComponent !== null) {
+      this._updateFilmControls();
+    }
+
     if (prevFilmCardComponent === null) {
       render(this._filmListContainer, this._filmCardComponent, RenderPosition.AFTER_CHILDS);
       return;
@@ -80,8 +87,9 @@ export default class Film {
     this._changeMode();
     this._renderDetailsComponent();
     this._mode = Mode.OPEN;
-    this._commentsModel.addObserver(this._handleModelCommentsEvent);
+    this._renderFilmControls(); // если не получилось обновить данные, то потрясти
 
+    this._commentsModel.addObserver(this._handleModelCommentsEvent);
     this._api.getComments(this._film.id)
       .then((comments) => { // комменты пришли
         this._commentsModel.setComments(UpdateType.INIT, comments);
@@ -91,7 +99,6 @@ export default class Film {
         this._commentsModel.setComments(UpdateType.INIT, []);
         this._renderCommentsList();
       });
-    // попап должен рендериться и без комментариев. На месте комментариев должен появляться лоадинг и ошибка
   }
 
   resetView() {
@@ -108,6 +115,10 @@ export default class Film {
     document.removeEventListener('keydown', this._escKeyDownHandler);
     document.removeEventListener('keydown', this._ctrlEnterKeyDownHandler);
     this._mode = Mode.CLOSE;
+    this._handleViewAction(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      this._film);
   }
 
   _escKeyDownHandler(evt) {
@@ -159,10 +170,10 @@ export default class Film {
     this._openFilmDetails();
   }
 
-  _handleViewedClick() {
+  _handleViewedClick(Update = UpdateType.MINOR) {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      Update,
       Object.assign(
         {},
         this._film,
@@ -171,10 +182,10 @@ export default class Film {
         }));
   }
 
-  _handleFavoriteClick() {
+  _handleFavoriteClick(Update = UpdateType.MINOR) {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      Update,
       Object.assign(
         {},
         this._film,
@@ -183,10 +194,10 @@ export default class Film {
         }));
   }
 
-  _handleWatchlistClick() {
+  _handleWatchlistClick(Update = UpdateType.MINOR) {
     this._handleViewAction(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      Update,
       Object.assign(
         {},
         this._film,
@@ -199,36 +210,18 @@ export default class Film {
     this._filmDetailsComponent = new FilmDetailsView(this._film);
 
     this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
-    this._filmDetailsComponent.setViewedClickHandler(this._handleViewedClick);
-    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     document.addEventListener('keydown', this._escKeyDownHandler);
 
     this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
     this._commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container');
+    this._topContainer = this._filmDetailsComponent.getElement().querySelector('.film-details__top-container');
 
     this._siteBodyElement.classList.add('hide-overflow');
   }
 
-  //возможно это не нужно. Нужно подумать, как избежать проблем с попапом
-  // в списках при удалении его фильма из этого списка
-  _clearDetailsComponent() {
-    remove(this._filmDetailsComponent);
-    remove(this._newCommentComponent);
-    remove(this._commentsListComponent);
-  }
-
-  _updateCommentList(data) { // нужно ли?
-    remove(this._newCommentComponent);
-    remove(this._commentsListComponent);
-
-    this._commentsListComponent = new CommentsListView(data);
-    this._newCommentComponent = new NewComment();
-
-    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
-    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
-
-    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
+  _updateCommentList() {
+    this._clearCommentsList();
+    this._renderCommentsList();
   }
 
   _renderCommentsList () {
@@ -248,18 +241,40 @@ export default class Film {
     document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
   }
 
-  _clearCommentsList() { // наверно это не нужно
-    remove(this._loadingComponent);
+  _clearCommentsList() {
+    remove(this._newCommentComponent);
+    remove(this._commentsListComponent);
+    document.removeEventListener('keydown', this._ctrlEnterKeyDownHandler);
   }
 
-  _handleModelCommentsEvent(updateType, data) { // подходим к тому, что для комментариев не нужен тип перерисовки
+  _updateFilmControls() {
+    this._clearFilmControls();
+    this._renderFilmControls();
+  }
+
+  _renderFilmControls() {
+    // const film = this._commentsModel.getComments(); // возможно стоит настроить обновление из модели, как и комментарии
+    this._filmControlsComponent = new FilmControlsView(this._film);
+
+    this._filmControlsComponent.setViewedClickHandler(this._handleViewedClick);
+    this._filmControlsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmControlsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+
+    render(this._topContainer, this._filmControlsComponent, RenderPosition.AFTER_CHILDS);
+  }
+
+  _clearFilmControls() {
+    remove(this._filmControlsComponent);
+  }
+
+  _handleModelCommentsEvent(updateType) { // подходим к тому, что для комментариев не нужен тип перерисовки
     switch (updateType) {
       case UpdateType.INIT:
         this._isCommentsLoading = false;
         remove(this._loadingComponent);
         break;
       default:
-        this._updateCommentList(data); // обновление комментов при любом типе апдейта кроме инита
+        this._updateCommentList(); // обновление комментов при любом типе апдейта кроме инита
     }
   }
 

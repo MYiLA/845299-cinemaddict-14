@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 import he from 'he';
-import SmartView from './smart.js';
+import AbstractView from './abstract.js';
 
 const createCommentsListTemplate = (state) => { // отрисовались до того, как обновился сервер
   const createComments = () => {
@@ -32,7 +32,7 @@ const createCommentsListTemplate = (state) => { // отрисовались до
     </section>`;
 };
 
-export default class CommentsList extends SmartView {
+export default class CommentsList extends AbstractView{
   constructor(comments) {
     super();
     this._state = comments;
@@ -41,14 +41,6 @@ export default class CommentsList extends SmartView {
 
   getTemplate() {
     return createCommentsListTemplate(this._state);
-  }
-
-  reset(comments) {
-    this.state = comments;
-  }
-
-  restoreHandlers() {
-    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _deleteClickHandler(evt) {
