@@ -108,14 +108,17 @@ export default class Film {
       case State.SAVING:
         updateForm(true);
         break;
+
       case State.DELETING: // возможно тут нужен id комментария (чтобы понять какой именно задизейблить) + список комментов сделать смарт объектом
         updateComments(true, true);
         break;
+
       case State.ABORTING_SAVING:
         this._newCommentComponent.shake(updateForm(false));
         break;
+
       case State.ABORTING_DELETING:
-        updateComments(false, false);
+        this._commentsListComponent.shake(updateComments(false, false), idComment);
         break;
     }
   }
@@ -302,7 +305,6 @@ export default class Film {
   }
 
   _renderFilmControls() {
-    // const film = this._commentsModel.getComments(); // возможно стоит настроить обновление из модели, как и комментарии
     this._filmControlsComponent = new FilmControlsView(this._film);
 
     this._filmControlsComponent.setViewedClickHandler(this._handleViewedClick);
@@ -316,7 +318,7 @@ export default class Film {
     remove(this._filmControlsComponent);
   }
 
-  _handleModelCommentsEvent(updateType) { // подходим к тому, что для комментариев не нужен тип перерисовки
+  _handleModelCommentsEvent(updateType) { // Возможно для комментариев не нужен тип перерисовки?
     switch (updateType) {
       case UpdateType.INIT:
         this._isCommentsLoading = false;

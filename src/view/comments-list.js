@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'; // библиотека дат и времени
 import he from 'he';
-// import AbstractView from './abstract.js';
 import SmartView from './smart.js';
 
 const createCommentsListTemplate = (state) => { // отрисовались до того, как обновился сервер
@@ -87,5 +86,13 @@ export default class CommentsList extends SmartView{
     });
 
     this.updateElement();
+  }
+
+  shake(callback, commentId) {
+    this.getElement().querySelector(`[data-id="${commentId}"]`).style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+      callback();
+    }, this._SHAKE_ANIMATION_TIMEOUT);
   }
 }

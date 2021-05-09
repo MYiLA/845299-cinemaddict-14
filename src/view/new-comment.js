@@ -1,6 +1,5 @@
 import he from 'he';
 import { scrollFix } from '../utils/common.js';
-// import dayjs from 'dayjs'; // библиотека дат и времени
 import SmartView from './smart.js';
 
 const CLEAR_COMMENT = {
@@ -72,9 +71,9 @@ export default class NewComment extends SmartView {
     emojiElements.forEach((el) => {
       el.addEventListener('click', this._emojiToggleHandler);
     });
-    const textareaElement = this.getElement().querySelector('.film-details__comment-input');
-    textareaElement.addEventListener('input', this._textInputHandler);
-    scrollFix(textareaElement);
+    const textAreaElement = this.getElement().querySelector('.film-details__comment-input');
+    textAreaElement.addEventListener('input', this._textInputHandler);
+    scrollFix(textAreaElement);
   }
 
   restoreHandlers() {
@@ -90,14 +89,20 @@ export default class NewComment extends SmartView {
   _textInputHandler(evt) {
     evt.preventDefault();
     this.updateState({
-      text: evt.target.value, // если отправить пустой коммент со смайлом - возникает ошибка. пустой комментарий не отправлять
+      text: evt.target.value,
     }, true);
   }
 
   setCommentSubmitHandler(callback) {
     this._callback.commentSubmit = callback;
-    if (this._state.emoji) {
+
+    if (this._state.emoji && this._state.text) { // пустые комментарии блочатся до запроса к серверу
       this._callback.commentSubmit(NewComment.parseStateToComments(this._state));
+    } else {
+      this.getElement().style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
+      setTimeout(() => {
+        this.getElement().style.animation = '';
+      }, this._SHAKE_ANIMATION_TIMEOUT);
     }
   }
 
