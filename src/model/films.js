@@ -37,7 +37,6 @@ export default class Films extends Observer {
       {},
       film,
       {
-        commentsCount: film.comments.length,
         title: film.film_info.title,
         titleOriginal: film.film_info.alternative_title,
         rating: film.film_info.total_rating,
@@ -94,7 +93,6 @@ export default class Films extends Observer {
         },
       });
 
-    delete adaptedFilms.commentsCount;
     delete adaptedFilms.title;
     delete adaptedFilms.titleOriginal;
     delete adaptedFilms.rating;

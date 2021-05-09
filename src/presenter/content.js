@@ -3,7 +3,7 @@ import { render, remove, RenderPosition } from '../utils/render.js';
 import { sortByDate, sortByRating } from '../utils/film.js';
 import { filter } from '../utils/filter.js';
 
-import FilmPresenter from './film.js';
+import FilmPresenter, { State as TaskPresenterViewState } from './film.js';
 import FilmsListView from '../view/films-list.js';
 import LoadingView from '../view/loading.js';
 import FilmsListTitleView from '../view/films-list-title';
@@ -42,7 +42,7 @@ export default class Content {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init() {  // метод для начала работы модул
+  init() {  // метод для начала работы модуля
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
     this._renderFilmsListTitle();
     render(this._filmsListTitleComponent, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
@@ -85,23 +85,44 @@ export default class Content {
       .forEach((presenter) => presenter.resetView());
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, update, film) {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilms(updateType, response);
-        });
-        this._filmsModel.updateFilms(updateType, update);
+        this._api.updateFilm(update)
+          .then((response) => {
+            this._filmsModel.updateFilms(updateType, response);
+          })
+          .catch(() => {
+            this._filmPresenter[update.id].setAborting(); // только для фильма
+          });
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(update);
+        this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.SAVING);
+        // this._taskPresenter[update.id].setViewState(TaskPresenterViewState.SAVING);
+        this._api.addComment(film.id, update)
+          .then((response) => {
+            this._commentsModel.addComment(updateType, response.comments);
+            this._filmsModel.updateFilms(updateType, response.film);
+          })
+          .catch(() => {
+            this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.ABORTING_SAVING);
+          });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(update);
+        this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.DELETING, update);
+        this._api.deleteComment(update)
+          .then(() => {
+            // метод удаления ничего не возвращает
+            this._commentsModel.deleteComment(updateType, update);
+            this._filmsModel.updateFilms(updateType, film);
+          })
+          .catch(() => {
+            this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.ABORTING_DELETING, update);
+          });
         break;
     }
   }

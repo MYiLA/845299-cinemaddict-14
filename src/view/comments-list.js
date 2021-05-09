@@ -2,20 +2,23 @@ import dayjs from 'dayjs'; // библиотека дат и времени
 import he from 'he';
 import SmartView from './smart.js';
 
-const createCommentsListTemplate = (state) => {
+const createCommentsListTemplate = (state) => { // отрисовались до того, как обновился сервер
   const createComments = () => {
+
     return state.map((comment) => {
+      const { id, emoji, author, text, date, isDisabled, isDeleting } = comment;
+
       return `
-      <li class="film-details__comment" data-id="${comment.id}">
+      <li class="film-details__comment" data-id="${id}">
         <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
+          <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
         </span>
         <div>
-          <p class="film-details__comment-text">${he.encode(comment.text)}</p>
+          <p class="film-details__comment-text">${he.encode(text)}</p>
           <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
-            <button class="film-details__comment-delete">Delete</button>
+            <span class="film-details__comment-author">${author}</span>
+            <span class="film-details__comment-day">${dayjs(date).fromNow()}</span>
+            <button class="film-details__comment-delete" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
           </p>
         </div>
       </li>
@@ -32,19 +35,15 @@ const createCommentsListTemplate = (state) => {
     </section>`;
 };
 
-export default class CommentsList extends SmartView {
+export default class CommentsList extends SmartView{
   constructor(comments) {
     super();
-    this._state = comments;
+    this._state = CommentsList.parseCommentsToState(comments);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
   }
 
   getTemplate() {
     return createCommentsListTemplate(this._state);
-  }
-
-  reset(comments) {
-    this.state = comments;
   }
 
   restoreHandlers() {
@@ -60,5 +59,40 @@ export default class CommentsList extends SmartView {
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
     this.getElement().addEventListener('click', this._deleteClickHandler);
+  }
+
+  static parseCommentsToState(comments) {
+    return comments.map((comment) => {
+      return Object.assign(
+        {},
+        comment,
+        {
+          isDisabled: false,
+          isDeleting: false,
+        });
+    });
+  }
+
+  updateState(state, commentId) {
+    this._state = this._state.map((element) => {
+      if(element.id === commentId) {
+        return Object.assign(
+          {},
+          element,
+          state);
+      }
+
+      return element;
+    });
+
+    this.updateElement();
+  }
+
+  shake(callback, commentId) {
+    this.getElement().querySelector(`[data-id="${commentId}"]`).style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+      callback();
+    }, this._SHAKE_ANIMATION_TIMEOUT);
   }
 }

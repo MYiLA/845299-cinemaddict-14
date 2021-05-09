@@ -1,4 +1,5 @@
 import AbstractView from './abstract.js';
+
 const createContentTemplate = () => {
   return `
   <section class="films">
