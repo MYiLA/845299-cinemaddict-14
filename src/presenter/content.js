@@ -28,8 +28,6 @@ export default class Content {
     this._sortComponent = null;
 
     this._contentComponent = new ContentView();
-    this._filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
-
     this._filmsListComponent = new FilmsListView();
     this._filmsListEmptyComponent = new FilmsListEmptyView();
     this._loadingComponent = new LoadingView();
@@ -44,6 +42,7 @@ export default class Content {
 
   init() {  // метод для начала работы модуля
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
+    this._filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
     this._renderFilmsListTitle();
     render(this._filmsListTitleComponent, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
 

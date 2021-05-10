@@ -1,6 +1,6 @@
 import { getFilmPropertyCount } from './utils/film.js';
 import { remove, render, RenderPosition } from './utils/render.js';
-import { UpdateType } from './const.js';
+import { UpdateType, MenuItem } from './const.js';
 import FilmsModel from './model/films.js';
 import СommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
@@ -9,6 +9,7 @@ import FilterPresenter from './presenter/filter.js';
 import MenuView from './view/menu.js';
 import ProfileView from './view/profile.js';
 import MoviesCountView from './view/movies-count.js';
+import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 
 const AUTHORIZATION = 'Basic eo06840ik29889a';
@@ -33,6 +34,26 @@ const filterPresenter = new FilterPresenter(menuViewComponent, filterModel, film
 
 render(siteFooterStatElement, moviesCountEmptyComponent, RenderPosition.AFTER_CHILDS);
 render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
+
+let statisticsComponent = null;
+
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      if (statisticsComponent !== null) {
+        statisticsComponent = null;
+        contentPresenter.init();
+      }
+      break;
+    case MenuItem.STATS:
+      contentPresenter.destroy();
+      statisticsComponent = new StatisticsView(filmsModel.getFilms());
+      render(siteMainElement, statisticsComponent, RenderPosition.BEFOREEND);
+      break;
+  }
+};
+
+menuViewComponent.setMenuClickHandler(handleMenuClick);
 
 filterPresenter.init();
 contentPresenter.init();
