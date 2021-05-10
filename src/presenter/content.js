@@ -63,6 +63,16 @@ export default class Content {
     this._filterModel.removeObserver(this._handleModelFilmsEvent);
   }
 
+  show() {
+    this._contentContainer.querySelector('.films').classList.remove('hide');
+    this._sortComponent.show();
+  }
+
+  hide() {
+    this._contentContainer.querySelector('.films').classList.add('hide');
+    this._sortComponent.hide();
+  }
+
   _getFilms() {
     const filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms();

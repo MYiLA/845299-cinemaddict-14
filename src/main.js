@@ -26,6 +26,22 @@ const commentsModel = new СommentsModel();
 const filterModel = new FilterModel();
 
 const menuViewComponent = new MenuView();
+
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      statisticsComponent.hide();
+      contentPresenter.show();
+      break;
+    case MenuItem.STATS:
+      statisticsComponent.show();
+      contentPresenter.hide();
+      break;
+  }
+};
+
+menuViewComponent.setMenuClickHandler(handleMenuClick);
+
 const moviesCountEmptyComponent = new MoviesCountView(0);
 
 const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel, api);
@@ -35,28 +51,11 @@ const filterPresenter = new FilterPresenter(menuViewComponent, filterModel, film
 render(siteFooterStatElement, moviesCountEmptyComponent, RenderPosition.AFTER_CHILDS);
 render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
 
-let statisticsComponent = null;
-
-const handleMenuClick = (menuItem) => {
-  switch (menuItem) {
-    case MenuItem.FILMS:
-      if (statisticsComponent !== null) {
-        statisticsComponent = null;
-        contentPresenter.init();
-      }
-      break;
-    case MenuItem.STATS:
-      contentPresenter.destroy();
-      statisticsComponent = new StatisticsView(filmsModel.getFilms());
-      render(siteMainElement, statisticsComponent, RenderPosition.BEFOREEND);
-      break;
-  }
-};
-
-menuViewComponent.setMenuClickHandler(handleMenuClick);
-
 filterPresenter.init();
 contentPresenter.init();
+
+const statisticsComponent = new StatisticsView(filmsModel.getFilms());
+render(siteMainElement, statisticsComponent, RenderPosition.AFTER_CHILDS);
 
 api.getFilms()
   .then((films) => {
