@@ -70,6 +70,8 @@ export default class Content {
 
   hide() {
     this._contentContainer.querySelector('.films').classList.add('hide');
+    this._clearContent({ resetSortType: true });
+    this._renderContent();
     this._sortComponent.hide();
   }
 

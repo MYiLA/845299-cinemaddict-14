@@ -12,7 +12,6 @@ export default class Menu extends AbstractView {
   constructor() {
     super();
     this._statsClickHandler = this._statsClickHandler.bind(this);
-    // this._switchToFiltersHandler = this._switchToFiltersHandler.bind(this);
     this._isStats = false;
   }
 
@@ -36,6 +35,7 @@ export default class Menu extends AbstractView {
       return;
     } else {
       this.getElement().querySelector(`[href="#${MenuItem.STATS}"]`).classList.remove('main-navigation__additional--active');
+      activeElement.classList.add('main-navigation__item--active');
       this._callback.menuClick(MenuItem.FILMS);
     }
   }
