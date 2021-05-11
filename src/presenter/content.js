@@ -28,8 +28,6 @@ export default class Content {
     this._sortComponent = null;
 
     this._contentComponent = new ContentView();
-    this._filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
-
     this._filmsListComponent = new FilmsListView();
     this._filmsListEmptyComponent = new FilmsListEmptyView();
     this._loadingComponent = new LoadingView();
@@ -44,6 +42,7 @@ export default class Content {
 
   init() {  // метод для начала работы модуля
     render(this._contentContainer, this._contentComponent, RenderPosition.AFTER_CHILDS);
+    this._filmsListElement = this._contentComponent.getElement().querySelector('.films-list');
     this._renderFilmsListTitle();
     render(this._filmsListTitleComponent, this._filmsListComponent, RenderPosition.AFTER_ELEMENT);
 
@@ -62,6 +61,18 @@ export default class Content {
 
     this._filmsModel.removeObserver(this._handleModelFilmsEvent);
     this._filterModel.removeObserver(this._handleModelFilmsEvent);
+  }
+
+  show() {
+    this._contentContainer.querySelector('.films').classList.remove('hide');
+    this._sortComponent.show();
+  }
+
+  hide() {
+    this._contentContainer.querySelector('.films').classList.add('hide');
+    this._clearContent({ resetRenderedFilmCount: true, resetSortType: true });
+    this._renderContent();
+    this._sortComponent.hide();
   }
 
   _getFilms() {

@@ -12,6 +12,8 @@ const createFilmDetailsTemplate = (film) => {
     poster, writers, actors, country,
   } = film;
 
+  const { h, m } = translateMinutesToHours(runtime);
+
   const genresRender = () => {
     if (genres.length === 1) {
       return `
@@ -79,7 +81,7 @@ const createFilmDetailsTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${translateMinutesToHours(runtime)}</td>
+                <td class="film-details__cell">${h}h ${m}m</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>

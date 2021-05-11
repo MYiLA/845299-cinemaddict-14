@@ -13,7 +13,10 @@ export const translateMinutesToHours = (minutes) => {
   const hours = Math.floor(minutes / 60);
   const minutesRemaining = minutes - hours * 60;
 
-  return `${hours}h ${minutesRemaining}m`;
+  return {
+    h: hours,
+    m: minutesRemaining,
+  };
 };
 
 export const removeItemOnce = (arr, value) => {

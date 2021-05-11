@@ -1,6 +1,6 @@
 import { getFilmPropertyCount } from './utils/film.js';
 import { remove, render, RenderPosition } from './utils/render.js';
-import { UpdateType } from './const.js';
+import { UpdateType, MenuItem } from './const.js';
 import FilmsModel from './model/films.js';
 import СommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
@@ -9,6 +9,7 @@ import FilterPresenter from './presenter/filter.js';
 import MenuView from './view/menu.js';
 import ProfileView from './view/profile.js';
 import MoviesCountView from './view/movies-count.js';
+import StatisticsView from './view/statistics.js';
 import Api from './api.js';
 
 const AUTHORIZATION = 'Basic eo06840ik29889a';
@@ -25,6 +26,7 @@ const commentsModel = new СommentsModel();
 const filterModel = new FilterModel();
 
 const menuViewComponent = new MenuView();
+
 const moviesCountEmptyComponent = new MoviesCountView(0);
 
 const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel, api);
@@ -37,12 +39,36 @@ render(siteMainElement, menuViewComponent, RenderPosition.BEFORE_CHILDS);
 filterPresenter.init();
 contentPresenter.init();
 
+let statisticsComponent = null;
+
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      statisticsComponent.hide();
+      contentPresenter.show();
+      break;
+    case MenuItem.STATS:
+      remove(statisticsComponent);
+      renderStatisticsComponent();
+      statisticsComponent.show();
+      contentPresenter.hide();
+      break;
+  }
+};
+
+menuViewComponent.setMenuClickHandler(handleMenuClick);
+
+const renderStatisticsComponent = () => {
+  statisticsComponent = new StatisticsView(filmsModel.getFilms());
+  render(siteMainElement, statisticsComponent, RenderPosition.AFTER_CHILDS);
+};
+
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
     // поместить сюда обработчик меню, чтобы не перейти на статистику до загрузки данных? Возможно это не нужно киноману
     const viewedCount = getFilmPropertyCount(filmsModel.getFilms(), 'isViewed');
-
+    // статистика и профиль не меняют отображение при изменении данных (надо их добавить в слушатели изменений)
     if (filmsModel.getFilms().length) {
       const profileViewComponent = new ProfileView(viewedCount);
       render(siteHeaderElement, profileViewComponent, RenderPosition.AFTER_CHILDS);
@@ -51,9 +77,10 @@ api.getFilms()
     remove(moviesCountEmptyComponent);
     const moviesCountComponent = new MoviesCountView(filmsModel.getFilms().length);
     render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
-
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    const statisticsComponent = new StatisticsView(filmsModel.getFilms());
+    render(siteMainElement, statisticsComponent, RenderPosition.AFTER_CHILDS);
     // поместить сюда обработчик меню, чтобы не перейти на статистику до загрузки данных? Возможно это не нужно киноману
   });

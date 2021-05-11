@@ -33,4 +33,12 @@ export default class Abstract {
       callback();
     }, this._SHAKE_ANIMATION_TIMEOUT);
   }
+
+  show() {
+    this.getElement().classList.remove('hide');
+  }
+
+  hide() {
+    this.getElement().classList.add('hide');
+  }
 }
