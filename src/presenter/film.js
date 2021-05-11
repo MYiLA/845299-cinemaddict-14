@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'; // библиотека дат и времени
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix, removeItemOnce } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
@@ -219,6 +220,8 @@ export default class Film {
   }
 
   _handleViewedClick(Update = UpdateType.MINOR) {
+    const watchingDate = this._film.isViewed ? NaN : dayjs().valueOf();
+
     this._handleViewAction(
       UserAction.UPDATE_FILM,
       Update,
@@ -227,6 +230,7 @@ export default class Film {
         this._film,
         {
           isViewed: !this._film.isViewed,
+          watchingDate,
         }));
   }
 

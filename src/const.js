@@ -32,3 +32,11 @@ export const MenuItem = {
   FILMS: 'films',
   STATS: 'stats',
 };
+
+export const StatisticFilterType = {
+  ALL_TIME: 'all-time',
+  TODAY: 'today',
+  WEEK: 'week',
+  MONTH: 'month',
+  YEAR: 'year',
+};

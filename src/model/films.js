@@ -57,6 +57,8 @@ export default class Films extends Observer {
         isFavorite: film.user_details.favorite,
       });
 
+    // console.log(film.user_details.watching_date);
+    // console.log(adaptedFilms.watchingDate);
     delete adaptedFilms.film_info;
     delete adaptedFilms.user_details;
 
@@ -88,7 +90,7 @@ export default class Films extends Observer {
         user_details: {
           watchlist: film.isWatchlist,
           already_watched: film.isViewed,
-          watching_date: dayjs(film.watchingDate).toISOString(),
+          watching_date: film.watchingDate ? dayjs(film.watchingDate).toISOString() : film.watchingDate,
           favorite: film.isFavorite,
         },
       });
