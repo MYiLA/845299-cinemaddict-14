@@ -9,13 +9,13 @@ export const scrollFix = (element) => {
   element.scrollTop = element.scrollHeight;
 };
 
-export const translateMinutesToHours = (minutes) => {
-  const hours = Math.floor(minutes / 60);
-  const minutesRemaining = minutes - hours * 60;
+export const translateMinutesToHours = (minutesCount) => {
+  const hours = Math.floor(minutesCount / 60);
+  const minutes = minutesCount - hours * 60;
 
   return {
-    h: hours,
-    m: minutesRemaining,
+    hours,
+    minutes,
   };
 };
 

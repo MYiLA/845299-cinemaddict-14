@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'; // библиотека дат и времени
+import dayjs from 'dayjs';
 import Observer from '../utils/observer.js';
 
 export default class Comments extends Observer {
@@ -9,7 +9,7 @@ export default class Comments extends Observer {
   }
 
   setComments(updateType, comments) {
-    this._comments = comments.slice(); // получает и записывает комментарии по переданному id фильма
+    this._comments = comments.slice();
     this._notify(updateType);
   }
 

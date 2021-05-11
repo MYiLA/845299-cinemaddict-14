@@ -72,7 +72,7 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
 const createStatisticsTemplate = (data, filters) => {
   const { films, dateFrom } = data;
   const { isViewedCount, runtimeCount, topGenre } = dataFilmsViewedInDateRange(films, dateFrom);
-  const { h, m } = translateMinutesToHours(runtimeCount);
+  const { hours, minutes } = translateMinutesToHours(runtimeCount);
 
   const titleRender = () => {
     const viewedCount = getFilmPropertyCount(data.films, 'isViewed');
@@ -126,7 +126,7 @@ const createStatisticsTemplate = (data, filters) => {
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">${h} <span class="statistic__item-description">h</span> ${m} <span class="statistic__item-description">m</span></p>
+        <p class="statistic__item-text">${hours} <span class="statistic__item-description">h</span> ${minutes} <span class="statistic__item-description">m</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>

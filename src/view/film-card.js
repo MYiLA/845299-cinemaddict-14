@@ -7,7 +7,7 @@ const MAX_DESC_SYMBOL = 140;
 const createFilmCardTemplate = (film) => {
   const { desc, releaseDate, title, rating, runtime, genres, poster, comments, isWatchlist, isViewed, isFavorite } = film;
 
-  const { h, m } = translateMinutesToHours(runtime);
+  const { hours, minutes } = translateMinutesToHours(runtime);
 
   const releaseDateRender = () => {
     if (!releaseDate) {
@@ -32,7 +32,7 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
       ${releaseDateRender()}
-      <span class="film-card__duration">${h}h ${m}m</span>
+      <span class="film-card__duration">${hours}h ${minutes}m</span>
       <span class="film-card__genre">${genres[0]}</span>
     </p>
     <img src="${poster}" alt="" class="film-card__poster">
