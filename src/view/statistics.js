@@ -9,6 +9,7 @@ import { translateMinutesToHours } from '../utils/common.js';
 
 const renderGenreChart = (genreCtx, numbersOfEachGenre) => {
   // Нужно будет доработать код, проверить на соответствие критериям и дописать недостающие части.
+  // в консоли сыпятся варнинги - надо изучить это.
   return new Chart(genreCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',

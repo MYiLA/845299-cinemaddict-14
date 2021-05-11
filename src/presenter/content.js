@@ -1,11 +1,12 @@
 import { Count, SortType, UpdateType, UserAction } from '../const.js';
 import { render, remove, RenderPosition } from '../utils/render.js';
-import { sortByDate, sortByRating } from '../utils/film.js';
+import { sortByDate, sortByRating, getFilmPropertyCount } from '../utils/film.js';
 import { filter } from '../utils/filter.js';
 
 import FilmPresenter, { State as TaskPresenterViewState } from './film.js';
 import FilmsListView from '../view/films-list.js';
 import LoadingView from '../view/loading.js';
+import ProfileView from '../view/profile.js';
 import FilmsListTitleView from '../view/films-list-title';
 import FilmsListEmptyView from '../view/films-list-empty.js';
 import SortView from '../view/sort.js';
@@ -26,7 +27,9 @@ export default class Content {
 
     this._showMoreComponent = null;
     this._sortComponent = null;
+    this._profileViewComponent = null;
 
+    this._siteHeaderElement = document.querySelector('.header');
     this._contentComponent = new ContentView();
     this._filmsListComponent = new FilmsListView();
     this._filmsListEmptyComponent = new FilmsListEmptyView();
@@ -208,6 +211,17 @@ export default class Content {
     render(this._filmsListTitleComponent, this._filmsListEmptyComponent, RenderPosition.AFTER_ELEMENT);
   }
 
+  _renderProfile() {
+    if (this._profileViewComponent !== null) {
+      this._profileViewComponent = null;
+    }
+
+    const viewedCount = getFilmPropertyCount(this._filmsModel.getFilms(), 'isViewed');
+    this._profileViewComponent = new ProfileView(viewedCount);
+
+    render(this._siteHeaderElement, this._profileViewComponent, RenderPosition.AFTER_CHILDS);
+  }
+
   _handleShowMoreButtonClick() {
     const filmCount = this._getFilms().length;
     const newRenderedFilmCount = Math.min(filmCount, this._renderedFilmCount + Count.FILM_COUNT_STEP);
@@ -243,6 +257,7 @@ export default class Content {
 
     remove(this._filmsListTitleComponent);
     remove(this._sortComponent);
+    remove(this._profileViewComponent);
     remove(this._showMoreComponent);
     remove(this._loadingComponent);
     remove(this._filmsListEmptyComponent);
@@ -282,6 +297,7 @@ export default class Content {
     // константу Count.FILM_COUNT_STEP на свойство _renderedFilmCount,
     // чтобы в случае перерисовки сохранить N-показанных карточек
     this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmCount)));
+    this._renderProfile();
 
     if (filmCount > this._renderedFilmCount) {
       this._renderShowMoreButton();

@@ -35,4 +35,8 @@ export default class Profile extends AbstractView {
   getTemplate() {
     return createProfileTemplate(this._viewedCount);
   }
+
+  setViewedCount(count) {
+    this._viewedCount = count;
+  }
 }
