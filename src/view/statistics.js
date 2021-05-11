@@ -7,9 +7,9 @@ import { getFilmPropertyCount } from '../utils/film.js';
 import { dataFilmsViewedInDateRange } from '../utils/statistics.js';
 import { translateMinutesToHours } from '../utils/common.js';
 
-const renderGenreChart = (genreCtx, numbersOfEachGenre) => {
-  // Нужно будет доработать код, проверить на соответствие критериям и дописать недостающие части.
-  // в консоли сыпятся варнинги - надо изучить это.
+const HEIGHT_FOR_SCROLL = '1200px';
+
+const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
   return new Chart(genreCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
@@ -22,7 +22,17 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre) => {
         anchor: 'start',
       }],
     },
+    dataset: {
+      barThickness: 24,
+    },
     options: {
+      animation: {
+        onComplete: function() {
+          setTimeout(() => {
+            thisElement.style.minHeight = '';
+          }, 0);
+        },
+      },
       plugins: {
         datalabels: {
           font: {
@@ -41,20 +51,11 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre) => {
             padding: 100,
             fontSize: 20,
           },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          barThickness: 24,
         }],
         xAxes: [{
           ticks: {
             display: false,
             beginAtZero: true,
-          },
-          gridLines: { //возможно не надо
-            display: false,
-            drawBorder: false,
           },
         }],
       },
@@ -179,6 +180,8 @@ export default class Statistics extends SmartView {
       },
     ];
 
+    this._scroll = this.getElement().scrollHeight;
+
     this._filterChangeHandler = this._filterChangeHandler.bind(this);
     this._setCharts();
     this._setDatefilter();
@@ -196,10 +199,11 @@ export default class Statistics extends SmartView {
   updateElement() {
     super.updateElement();
     this.show();
+    this.getElement().style.minHeight = HEIGHT_FOR_SCROLL;
+    document.documentElement.scrollTop = this._scroll;
   }
 
   _setCharts() {
-    // отрисовка графика
     if (this._genreChart !== null) {
       this._genreChart = null;
     }
@@ -209,11 +213,14 @@ export default class Statistics extends SmartView {
     const { films, dateFrom } = this._state;
     const { numbersOfEachGenre } = dataFilmsViewedInDateRange(films, dateFrom );
 
-    this._genreChart = renderGenreChart(genreCtx, numbersOfEachGenre);
+    this._genreChart = renderGenreChart(genreCtx, numbersOfEachGenre, this.getElement());
   }
 
   _filterChangeHandler(evt) {
+
     if (evt.target.tagName !== 'LABEL') return;
+
+    this._scroll = document.documentElement.scrollTop;
 
     const filter = evt.target.getAttribute('for').split('statistic-')[1];
 

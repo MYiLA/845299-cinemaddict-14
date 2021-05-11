@@ -41,7 +41,9 @@ let statisticsComponent = null;
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.FILMS:
-      statisticsComponent.hide();
+      if (statisticsComponent) {
+        statisticsComponent.hide();
+      }
       contentPresenter.show();
       break;
     case MenuItem.STATS:
