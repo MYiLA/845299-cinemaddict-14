@@ -7,9 +7,9 @@ const createSortTemplate = (sortType) => {
 
   return `
   <ul class="sort">
-    <li><a href="#" class="sort__button ${activeClassRender(SortType.DEFAULT)}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-    <li><a href="#" class="sort__button ${activeClassRender(SortType.DATE)}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-    <li><a href="#" class="sort__button ${activeClassRender(SortType.RATING)}" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
+    <li><a href="#" class="sort__button ${ activeClassRender(SortType.DEFAULT) }" data-sort-type="${ SortType.DEFAULT }">Sort by default</a></li>
+    <li><a href="#" class="sort__button ${ activeClassRender(SortType.DATE) }" data-sort-type="${ SortType.DATE }">Sort by date</a></li>
+    <li><a href="#" class="sort__button ${ activeClassRender(SortType.RATING) }" data-sort-type="${ SortType.RATING }">Sort by rating</a></li>
   </ul>`;
 };
 

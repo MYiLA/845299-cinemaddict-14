@@ -47,7 +47,7 @@ const handleMenuClick = (menuItem) => {
       contentPresenter.show();
       break;
     case MenuItem.STATS:
-      remove(statisticsComponent); // от этого можно избавиться, если удалять вовремя обработчики
+      remove(statisticsComponent);
       renderStatisticsComponent();
       statisticsComponent.show();
       contentPresenter.hide();
@@ -65,8 +65,6 @@ const renderStatisticsComponent = () => {
 api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
-    // поместить сюда обработчик меню, чтобы не перейти на статистику до загрузки данных? Возможно это не нужно киноману
-    // статистика и профиль не меняют отображение при изменении данных (надо их добавить в слушатели изменений)
     remove(moviesCountEmptyComponent);
     const moviesCountComponent = new MoviesCountView(filmsModel.getFilms().length);
     render(siteFooterStatElement, moviesCountComponent, RenderPosition.AFTER_CHILDS);
@@ -75,5 +73,4 @@ api.getFilms()
     filmsModel.setFilms(UpdateType.INIT, []);
     const statisticsComponent = new StatisticsView(filmsModel.getFilms());
     render(siteMainElement, statisticsComponent, RenderPosition.AFTER_CHILDS);
-    // поместить сюда обработчик меню, чтобы не перейти на статистику до загрузки данных? Возможно это не нужно киноману
   });

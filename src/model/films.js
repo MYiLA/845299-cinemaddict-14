@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'; // библиотека дат и времени
+import dayjs from 'dayjs';
 import Observer from '../utils/observer.js';
 
 export default class Films extends Observer {
@@ -50,15 +50,13 @@ export default class Films extends Observer {
         runtime: film.film_info.runtime,
         genres: film.film_info.genre,
         desc: film.film_info.description,
-        // данные свойства изменяемые
+
         isWatchlist: film.user_details.watchlist,
         isViewed: film.user_details.already_watched,
         watchingDate: dayjs(film.user_details.watching_date).valueOf(),
         isFavorite: film.user_details.favorite,
       });
 
-    // console.log(film.user_details.watching_date);
-    // console.log(adaptedFilms.watchingDate);
     delete adaptedFilms.film_info;
     delete adaptedFilms.user_details;
 

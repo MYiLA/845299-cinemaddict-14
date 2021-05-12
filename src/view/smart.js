@@ -6,7 +6,7 @@ export default class Smart extends AbstractView {
     this._state = {};
   }
 
-  updateState(update, justStateUpdating) { // будет обновлять данные и, если нужно, вызывать метод updateElement
+  updateState(update, justStateUpdating) {
     if (!update) {
       return;
     }
@@ -26,12 +26,12 @@ export default class Smart extends AbstractView {
   updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
-    this.removeElement();  // удалить старый DOM-элемент компонента;
+    this.removeElement();  // удаление старого DOM-элемента компонента
 
-    const newElement = this.getElement(); // создать новый DOM-элемент;
-    parent.replaceChild(newElement, prevElement); // поместить новый элемент вместо старого;
+    const newElement = this.getElement(); // создание нового DOM-элемента
+    parent.replaceChild(newElement, prevElement); // размещение нового элемента вместо старого
 
-    this.restoreHandlers(); // восстановить обработчики событий, вызвав restoreHandlers.
+    this.restoreHandlers(); // восстановление обработчиков событий
   }
 
   restoreHandlers() {

@@ -15,36 +15,36 @@ const createNewCommentTemplate = (state) => {
     if (!emoji) {
       return '';
     }
-    return `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">`;
+    return `<img src="images/emoji/${ emoji }.png" width="55" height="55" alt="emoji-${ emoji }">`;
   };
 
   return `
   <div class="film-details__new-comment">
     <div class="film-details__add-emoji-label">
-      ${emojiRender()}
+      ${ emojiRender() }
     </div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''}>${he.encode(text)}</textarea>
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${ isDisabled ? 'disabled' : '' }>${ he.encode(text) }</textarea>
     </label>
 
     <div class="film-details__emoji-list">
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${(emoji === 'smile') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${ (emoji === 'smile') ? 'checked' : '' } ${ isDisabled ? 'disabled' : '' }>
       <label class="film-details__emoji-label" for="emoji-smile">
         <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${(emoji === 'sleeping') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${ (emoji === 'sleeping') ? 'checked' : '' } ${ isDisabled ? 'disabled' : '' }>
       <label class="film-details__emoji-label" for="emoji-sleeping">
         <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${(emoji === 'puke') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${ (emoji === 'puke') ? 'checked' : '' } ${ isDisabled ? 'disabled' : '' }>
       <label class="film-details__emoji-label" for="emoji-puke">
         <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${(emoji === 'angry') ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${ (emoji === 'angry') ? 'checked' : '' } ${ isDisabled ? 'disabled' : '' }>
       <label class="film-details__emoji-label" for="emoji-angry">
         <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
       </label>

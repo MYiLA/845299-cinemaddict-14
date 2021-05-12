@@ -24,12 +24,12 @@ export default class Filter {
     this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
-    if (prevFilterComponent === null) { // возможно из-за того, что у меня нет этой проверки, отрисовываются несколько попапов подряд, и изменения на шаг позже появляются
+    if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFORE_CHILDS);
       return;
     }
 
-    replace(this._filterComponent, prevFilterComponent); // уточнить наличие этих методов у попапа в фильме
+    replace(this._filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
 
   }

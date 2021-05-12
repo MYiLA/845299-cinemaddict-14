@@ -7,11 +7,11 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
     if (type === 'all') {
       return '';
     }
-    return `<span class="main-navigation__item-count">${count}</span>`;
+    return `<span class="main-navigation__item-count">${ count }</span>`;
   };
 
   return `
-    <a href="#${type}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}">${name} ${renderCount()}</a>
+    <a href="#${ type }" class="main-navigation__item ${ type === currentFilterType ? 'main-navigation__item--active' : '' }">${ name } ${ renderCount() }</a>
   `;
 };
 
@@ -22,7 +22,7 @@ export const createFilterTemplate = (filterItems, currentFilterType) => {
 
   return `
     <div class="main-navigation__items">
-      ${filterItemsTemplate}
+      ${ filterItemsTemplate }
     </div>
     `;
 };

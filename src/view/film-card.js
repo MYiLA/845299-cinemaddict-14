@@ -14,12 +14,12 @@ const createFilmCardTemplate = (film) => {
       return '';
     }
 
-    return `<span class="film-card__year">${dayjs(releaseDate).format('YYYY')}</span>`;
+    return `<span class="film-card__year">${ dayjs(releaseDate).format('YYYY') }</span>`;
   };
 
   const descRender = () => {
     if (desc.length > MAX_DESC_SYMBOL) {
-      return `${desc.slice(0 , MAX_DESC_SYMBOL - 1)}...`;
+      return `${ desc.slice(0 , MAX_DESC_SYMBOL - 1) }...`;
     }
     return desc;
   };
@@ -28,20 +28,20 @@ const createFilmCardTemplate = (film) => {
 
   return `
   <article class="film-card">
-    <h3 class="film-card__title">${title}</h3>
-    <p class="film-card__rating">${rating}</p>
+    <h3 class="film-card__title">${ title }</h3>
+    <p class="film-card__rating">${ rating }</p>
     <p class="film-card__info">
       ${releaseDateRender()}
-      <span class="film-card__duration">${hours}h ${minutes}m</span>
+      <span class="film-card__duration">${ hours }h ${ minutes }m</span>
       <span class="film-card__genre">${genres[0]}</span>
     </p>
-    <img src="${poster}" alt="" class="film-card__poster">
-    <p class="film-card__description">${descRender()}</p>
-    <a class="film-card__comments">${comments.length} comments</a>
+    <img src="${ poster }" alt="" class="film-card__poster">
+    <p class="film-card__description">${ descRender() }</p>
+    <a class="film-card__comments">${ comments.length } comments</a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${activeClassRender(isWatchlist)}" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${activeClassRender(isViewed)}" type="button">Mark as watched</button>
-      <button class="film-card__controls-item button film-card__controls-item--favorite ${activeClassRender(isFavorite)}" type="button">Mark as favorite</button>
+      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${ activeClassRender(isWatchlist) }" type="button">Add to watchlist</button>
+      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${ activeClassRender(isViewed) }" type="button">Mark as watched</button>
+      <button class="film-card__controls-item button film-card__controls-item--favorite ${ activeClassRender(isFavorite) }" type="button">Mark as favorite</button>
     </div>
   </article>`;
 };
@@ -83,9 +83,8 @@ export default class FilmCard extends AbstractView {
 
 
   setOpenClickHandler(callback) {
-    // 1. колбэк мы запишем во внутреннее свойство
     this._callback.openClick = callback;
-    // 2. В addEventListener передадим абстрактный обработчик
+
     this.getElement().querySelector('.film-card__poster').addEventListener('click', this._openClickHandler);
     this.getElement().querySelector('.film-card__title').addEventListener('click', this._openClickHandler);
     this.getElement().querySelector('.film-card__comments').addEventListener('click', this._openClickHandler);

@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 
 const createMoviesCountTemplate = (dataLength) => {
-  return `<p>${dataLength} movies inside</p>`;
+  return `<p>${ dataLength } movies inside</p>`;
 };
 
 export default class MoviesCount extends AbstractView {

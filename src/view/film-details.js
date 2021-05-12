@@ -19,20 +19,20 @@ const createFilmDetailsTemplate = (film) => {
       return `
         <td class="film-details__term">Genre</td>
         <td class="film-details__cell">
-        ${genres[0]}
+        ${ genres[0] }
       `;
     }
 
     let result = '';
 
     genres.forEach((element) => {
-      result += `<span class="film-details__genre">${element}</span>`;
+      result += `<span class="film-details__genre">${ element }</span>`;
     });
 
     return `
       <td class="film-details__term">Genres</td>
       <td class="film-details__cell">
-      ${result}
+      ${ result }
     `;
   };
 
@@ -45,39 +45,39 @@ const createFilmDetailsTemplate = (film) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="${poster}" alt="">
+            <img class="film-details__poster-img" src="${ poster }" alt="">
 
-            <p class="film-details__age">${ageRating}+</p>
+            <p class="film-details__age">${ ageRating }+</p>
           </div>
 
           <div class="film-details__info">
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
-                <h3 class="film-details__title">${title}</h3>
-                <p class="film-details__title-original">Original: ${titleOriginal}</p>
+                <h3 class="film-details__title">${ title }</h3>
+                <p class="film-details__title-original">Original: ${ titleOriginal }</p>
               </div>
 
               <div class="film-details__rating">
-                <p class="film-details__total-rating">${rating}</p>
+                <p class="film-details__total-rating">${ rating }</p>
               </div>
             </div>
 
             <table class="film-details__table">
               <tr class="film-details__row">
                 <td class="film-details__term">Director</td>
-                <td class="film-details__cell">${director}</td>
+                <td class="film-details__cell">${ director }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">${writers.join(', ')}</td>
+                <td class="film-details__cell">${ writers.join(', ') }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">${actors.join(', ')}</td>
+                <td class="film-details__cell">${ actors.join(', ') }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${dayjs(releaseDate).format('DD MMMM YYYY')}</td>
+                <td class="film-details__cell">${ dayjs(releaseDate).format('DD MMMM YYYY') }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
@@ -93,7 +93,7 @@ const createFilmDetailsTemplate = (film) => {
             </table>
 
             <p class="film-details__film-description">
-              ${desc}
+              ${ desc }
             </p>
           </div>
         </div>

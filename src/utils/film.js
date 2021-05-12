@@ -1,7 +1,8 @@
-import dayjs from 'dayjs'; // библиотека дат и времени
+import dayjs from 'dayjs';
 
 export const getFilmPropertyCount = (films, nameProperty) => {
   let counter = 0;
+
   films.forEach((el) => {
     switch (nameProperty) {
       case 'isWatchlist':
@@ -21,6 +22,7 @@ export const getFilmPropertyCount = (films, nameProperty) => {
         break;
     }
   });
+
   return counter;
 };
 

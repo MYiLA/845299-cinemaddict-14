@@ -40,7 +40,7 @@ export const createElement = (template) => {
 };
 
 export const remove = (component) => {
-  // поддержим ситуацию удаления отсутствующего компонента
+  // поддержка ситуации удаления отсутствующего компонента
   if (component === null) {
     return;
   }

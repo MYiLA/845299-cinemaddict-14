@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'; // библиотека дат и времени
+import dayjs from 'dayjs';
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix, removeItemOnce } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
@@ -63,9 +63,6 @@ export default class Film {
     this._filmCardComponent = new FilmCardView(film);
 
     this._filmCardComponent.setOpenClickHandler(this._hangleOpenClick);
-    // Обратите внимание, что изменения в DOM должны происходить только после
-    // успешного запроса к серверу, иначе мы получим несогласованность — ситуацию, когда интерфейс не отражает реальных данных.
-    // в таком случае надо переписать логику чекбоксов в попапе
     this._filmCardComponent.setViewedClickHandler(this._handleViewedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -86,7 +83,7 @@ export default class Film {
     remove(prevFilmCardComponent);
   }
 
-  destroy() { // нужно?
+  destroy() {
     remove(this._filmCardComponent);
   }
 
@@ -98,7 +95,8 @@ export default class Film {
     };
 
     const updateComments = (isDisabled, isDeleting) => {
-      this._commentsListComponent.updateState({ // апдейт нужен только одному комментарию.
+      // апдейт нужен только одному комментарию
+      this._commentsListComponent.updateState({
         isDisabled,
         isDeleting,
       }, idComment);
@@ -110,7 +108,7 @@ export default class Film {
         updateForm(true);
         break;
 
-      case State.DELETING: // возможно тут нужен id комментария (чтобы понять какой именно задизейблить) + список комментов сделать смарт объектом
+      case State.DELETING:
         updateComments(true, true);
         break;
 
@@ -132,19 +130,20 @@ export default class Film {
   }
 
   _openFilmDetails() {
-    // console.log('_openFilmDetails()');
     this._changeMode();
     this._renderDetailsComponent();
     this._mode = Mode.OPEN;
-    this._renderFilmControls(); // если не получилось обновить данные, то потрясти
+    this._renderFilmControls();
 
     this._commentsModel.addObserver(this._handleModelCommentsEvent);
     this._api.getComments(this._film.id)
-      .then((comments) => { // комменты пришли
+      // если комменты пришли
+      .then((comments) => {
         this._commentsModel.setComments(UpdateType.INIT, comments);
         this._renderCommentsList();
       })
-      .catch(() => { // комменты не пришли
+      // если комменты не пришли
+      .catch(() => {
         this._commentsModel.setComments(UpdateType.INIT, []);
         this._renderCommentsList();
       });
@@ -157,7 +156,6 @@ export default class Film {
   }
 
   _closeFilmDetails() {
-    // console.log('_closeFilmDetails()');
     this._commentsModel.removeObserver(this._handleModelCommentsEvent);
     this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
     this._siteBodyElement.classList.remove('hide-overflow');
@@ -322,14 +320,13 @@ export default class Film {
     remove(this._filmControlsComponent);
   }
 
-  _handleModelCommentsEvent(updateType) { // Возможно для комментариев не нужен тип перерисовки?
-    switch (updateType) {
-      case UpdateType.INIT:
-        this._isCommentsLoading = false;
-        remove(this._loadingComponent);
-        break;
-      default:
-        this._updateCommentList(); // обновление комментов при любом типе апдейта кроме инита
+  _handleModelCommentsEvent(updateType) {
+    // обновление комментов при любом типе апдейта кроме инита
+    if (updateType === UpdateType.INIT) {
+      this._isCommentsLoading = false;
+      remove(this._loadingComponent);
+    } else {
+      this._updateCommentList();
     }
   }
 

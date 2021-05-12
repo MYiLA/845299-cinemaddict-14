@@ -4,7 +4,7 @@ import { MenuItem } from '../const.js';
 const createMenuTemplate = () => {
   return `
   <nav class="main-navigation">
-    <a href="#${MenuItem.STATS}" class="main-navigation__additional">Stats</a>
+    <a href="#${ MenuItem.STATS }" class="main-navigation__additional">Stats</a>
   </nav>`;
 };
 
@@ -25,7 +25,7 @@ export default class Menu extends AbstractView {
 
     if (activeElement.tagName !== 'A') return;
 
-    if (activeElement.getAttribute('href') === `#${MenuItem.STATS}`) {
+    if (activeElement.getAttribute('href') === `#${ MenuItem.STATS }`) {
       this.getElement().querySelectorAll('.main-navigation__item').forEach((item) => {
         item.classList.remove('main-navigation__item--active');
       });
@@ -34,7 +34,7 @@ export default class Menu extends AbstractView {
       this._callback.menuClick(MenuItem.STATS);
       return;
     } else {
-      this.getElement().querySelector(`[href="#${MenuItem.STATS}"]`).classList.remove('main-navigation__additional--active');
+      this.getElement().querySelector(`[href="#${ MenuItem.STATS }"]`).classList.remove('main-navigation__additional--active');
       activeElement.classList.add('main-navigation__item--active');
       this._callback.menuClick(MenuItem.FILMS);
     }
