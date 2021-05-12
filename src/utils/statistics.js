@@ -4,7 +4,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 
 // данные о просмотренных фильмах в диапазоне дат
-export const dataFilmsViewedInDateRange = (films, dateFrom) => {
+const dataFilmsViewedInDateRange = (films, dateFrom) => {
   const isViewedFilms = [];
 
   // получение списка фильмов, подходящих по дате
@@ -54,5 +54,9 @@ export const dataFilmsViewedInDateRange = (films, dateFrom) => {
     numbersOfEachGenre,
     topGenre,
   };
+};
+
+export {
+  dataFilmsViewedInDateRange
 };
 

@@ -15,7 +15,7 @@ const Mode = {
   OPEN: 'OPEN',
 };
 
-export const State = {
+const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
   ABORTING_SAVING: 'ABORTING_SAVING',
@@ -334,3 +334,7 @@ export default class Film {
     render(this._commentWrapElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
   }
 }
+
+export {
+  State
+};

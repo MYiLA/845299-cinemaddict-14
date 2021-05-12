@@ -15,7 +15,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
   `;
 };
 
-export const createFilterTemplate = (filterItems, currentFilterType) => {
+const createFilterTemplate = (filterItems, currentFilterType) => {
   const filterItemsTemplate = filterItems
     .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join('');

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-export const getFilmPropertyCount = (films, nameProperty) => {
+const getFilmPropertyCount = (films, nameProperty) => {
   let counter = 0;
 
   films.forEach((el) => {
@@ -44,7 +44,7 @@ const getWeightForNullData = (dataA, dataB) => {
 };
 
 // сортировка
-export const sortByDate = (film1, film2) => {
+const sortByDate = (film1, film2) => {
   const date1 = film1.releaseDate;
   const date2 = film2.releaseDate;
   const weight = getWeightForNullData(date1, date2);
@@ -56,8 +56,14 @@ export const sortByDate = (film1, film2) => {
   return dayjs(date2).diff(dayjs(date1));
 };
 
-export const sortByRating = (film1, film2) => {
+const sortByRating = (film1, film2) => {
   const rating1 = film1.rating;
   const rating2 = film2.rating;
   return rating2 - rating1;
+};
+
+export {
+  getFilmPropertyCount,
+  sortByDate,
+  sortByRating
 };
