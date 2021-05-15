@@ -26,12 +26,12 @@ export default class Smart extends AbstractView {
   updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
-    this.removeElement();  // удаление старого DOM-элемента компонента
+    this.removeElement();
 
-    const newElement = this.getElement(); // создание нового DOM-элемента
-    parent.replaceChild(newElement, prevElement); // размещение нового элемента вместо старого
+    const newElement = this.getElement();
+    parent.replaceChild(newElement, prevElement);
 
-    this.restoreHandlers(); // восстановление обработчиков событий
+    this.restoreHandlers();
   }
 
   restoreHandlers() {

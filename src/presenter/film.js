@@ -311,7 +311,6 @@ export default class Film {
   }
 
   _handleModelCommentsEvent(updateType) {
-    // обновление комментов при любом типе апдейта кроме инита
     if (updateType === UpdateType.INIT) {
       this._isCommentsLoading = false;
       remove(this._loadingComponent);

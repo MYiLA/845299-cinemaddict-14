@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 import { UpdateType } from '../const.js';
 
-const createFilmControlsTemplate = (film) => { // отрисовались до того, как обновился сервер
+const createFilmControlsTemplate = (film) => {
   const getChecked = (bln) => bln ? 'checked' : '';
   const { isWatchlist, isViewed, isFavorite } = film;
 

@@ -42,7 +42,6 @@ const getWeightForNullData = (dataA, dataB) => {
   return null;
 };
 
-// сортировка
 const sortByDate = (film1, film2) => {
   const date1 = film1.releaseDate;
   const date2 = film2.releaseDate;

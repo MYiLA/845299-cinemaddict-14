@@ -40,7 +40,6 @@ const createElement = (template) => {
 };
 
 const remove = (component) => {
-  // поддержка ситуации удаления отсутствующего компонента
   if (component === null) {
     return;
   }

@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'; // библиотека дат и времени
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import AbstractView from './abstract.js';
 import { translateMinutesToHours } from '../utils/common.js';

@@ -113,7 +113,7 @@ export default class NewComment extends SmartView {
   setCommentSubmitHandler(callback) {
     this._callback.commentSubmit = callback;
 
-    if (this._state.emoji && this._state.text) { // пустые комментарии блочатся до запроса к серверу
+    if (this._state.emoji && this._state.text) {
       this._callback.commentSubmit(NewComment.parseStateToComments(this._state));
     } else {
       this.getElement().style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;

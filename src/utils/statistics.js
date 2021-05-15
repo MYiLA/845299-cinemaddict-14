@@ -3,11 +3,9 @@ import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isBetween);
 
-// данные о просмотренных фильмах в диапазоне дат
 const dataFilmsViewedInDateRange = (films, dateFrom) => {
   const isViewedFilms = [];
 
-  // получение списка фильмов, подходящих по дате
   films.forEach((film) => {
     if (!film.isViewed) {
       return;
@@ -33,7 +31,6 @@ const dataFilmsViewedInDateRange = (films, dateFrom) => {
   const numbersOfEachGenre = {};
 
   const runtimeCount = isViewedFilms.reduce((acc, film) => {
-    // поиск жанров и аккумулирование в объект c подсчетом повторений
     film.genres.forEach((genre) => {
       if (numbersOfEachGenre[genre] !== undefined) {
         numbersOfEachGenre[genre] += 1;
@@ -45,7 +42,6 @@ const dataFilmsViewedInDateRange = (films, dateFrom) => {
     return acc + film.runtime;
   }, 0);
 
-  // вычисление топ жанра
   const topGenre = Object.entries(numbersOfEachGenre).reduce((acc, genre) => acc[1] > genre[1] ? acc : genre)[0];
 
   return {
