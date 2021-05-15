@@ -23,7 +23,9 @@ export default class Menu extends AbstractView {
     evt.preventDefault();
     const activeElement = evt.target;
 
-    if (activeElement.tagName !== 'A') return;
+    if (activeElement.tagName !== 'A') {
+      return;
+    }
 
     if (activeElement.getAttribute('href') === `#${ MenuItem.STATS }`) {
       this.getElement().querySelectorAll('.main-navigation__item').forEach((item) => {

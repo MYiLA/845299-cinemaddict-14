@@ -218,7 +218,9 @@ export default class Statistics extends SmartView {
 
   _filterChangeHandler(evt) {
 
-    if (evt.target.tagName !== 'LABEL') return;
+    if (evt.target.tagName !== 'LABEL') {
+      return;
+    }
 
     this._scroll = document.documentElement.scrollTop;
 
@@ -226,7 +228,10 @@ export default class Statistics extends SmartView {
 
     this._filters.forEach((filterState) => {
       if (filterState.type === filter) {
-        if (filterState.isActive) return;
+        if (filterState.isActive) {
+          return;
+        }
+
         filterState.isActive = true;
         return;
       }

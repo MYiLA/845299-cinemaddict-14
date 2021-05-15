@@ -52,7 +52,10 @@ export default class CommentsList extends SmartView{
 
   _deleteClickHandler(evt) {
     evt.preventDefault();
-    if (evt.target.tagName !== 'BUTTON') return;
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+
     this._callback.deleteClick(evt.path[3].dataset.id);
   }
 

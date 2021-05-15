@@ -42,7 +42,10 @@ export default class Filter extends AbstractView {
 
   _filterTypeChangeHandler(evt) {
     evt.preventDefault();
-    if (evt.target.tagName !== 'A') return;
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
+
     this._callback.filterTypeChange(evt.target.getAttribute('href').split('#')[1]);
   }
 
