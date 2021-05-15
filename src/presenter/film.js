@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
 import { scrollFix, removeItemOnce } from '../utils/common.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, State } from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
@@ -13,13 +13,6 @@ import NewComment from '../view/new-comment.js';
 const Mode = {
   CLOSE: 'CLOSE',
   OPEN: 'OPEN',
-};
-
-const State = {
-  SAVING: 'SAVING',
-  DELETING: 'DELETING',
-  ABORTING_SAVING: 'ABORTING_SAVING',
-  ABORTING_DELETING: 'ABORTING_DELETING',
 };
 
 export default class Film {
@@ -95,7 +88,6 @@ export default class Film {
     };
 
     const updateComments = (isDisabled, isDeleting) => {
-      // апдейт нужен только одному комментарию
       this._commentsListComponent.updateState({
         isDisabled,
         isDeleting,
@@ -137,12 +129,10 @@ export default class Film {
 
     this._commentsModel.addObserver(this._handleModelCommentsEvent);
     this._api.getComments(this._film.id)
-      // если комменты пришли
       .then((comments) => {
         this._commentsModel.setComments(UpdateType.INIT, comments);
         this._renderCommentsList();
       })
-      // если комменты не пришли
       .catch(() => {
         this._commentsModel.setComments(UpdateType.INIT, []);
         this._renderCommentsList();
@@ -334,7 +324,3 @@ export default class Film {
     render(this._commentWrapElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
   }
 }
-
-export {
-  State
-};

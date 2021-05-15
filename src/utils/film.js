@@ -26,7 +26,6 @@ const getFilmPropertyCount = (films, nameProperty) => {
   return counter;
 };
 
-// если у фильма нет даты релиза
 const getWeightForNullData = (dataA, dataB) => {
   if (dataA === null && dataB === null) {
     return 0;

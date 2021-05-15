@@ -47,6 +47,13 @@ const StatisticFilterType = {
   YEAR: 'year',
 };
 
+const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING_SAVING: 'ABORTING_SAVING',
+  ABORTING_DELETING: 'ABORTING_DELETING',
+};
+
 export {
   Count,
   SortType,
@@ -55,5 +62,6 @@ export {
   FilterType,
   MenuItem,
   StatisticFilterType,
-  TagName
+  TagName,
+  State
 };

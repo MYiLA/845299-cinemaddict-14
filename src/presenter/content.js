@@ -1,9 +1,9 @@
-import { Count, SortType, UpdateType, UserAction } from '../const.js';
+import { Count, SortType, UpdateType, UserAction, State as FilmPresenterViewState } from '../const.js';
 import { render, remove, RenderPosition } from '../utils/render.js';
 import { sortByDate, sortByRating, getFilmPropertyCount } from '../utils/film.js';
 import { filter } from '../utils/filter.js';
 
-import FilmPresenter, { State as TaskPresenterViewState } from './film.js';
+import FilmPresenter from './film.js';
 import FilmsListView from '../view/films-list.js';
 import LoadingView from '../view/loading.js';
 import ProfileView from '../view/profile.js';
@@ -111,25 +111,25 @@ export default class Content {
           });
         break;
       case UserAction.ADD_COMMENT:
-        this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.SAVING);
+        this._filmPresenter[film.id].setViewStateComment(FilmPresenterViewState.SAVING);
         this._api.addComment(film.id, update)
           .then((response) => {
             this._commentsModel.addComment(updateType, response.comments);
             this._filmsModel.updateFilms(updateType, response.film);
           })
           .catch(() => {
-            this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.ABORTING_SAVING);
+            this._filmPresenter[film.id].setViewStateComment(FilmPresenterViewState.ABORTING_SAVING);
           });
         break;
       case UserAction.DELETE_COMMENT:
-        this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.DELETING, update);
+        this._filmPresenter[film.id].setViewStateComment(FilmPresenterViewState.DELETING, update);
         this._api.deleteComment(update)
           .then(() => {
             this._commentsModel.deleteComment(updateType, update);
             this._filmsModel.updateFilms(updateType, film);
           })
           .catch(() => {
-            this._filmPresenter[film.id].setViewStateComment(TaskPresenterViewState.ABORTING_DELETING, update);
+            this._filmPresenter[film.id].setViewStateComment(FilmPresenterViewState.ABORTING_DELETING, update);
           });
         break;
     }
@@ -138,18 +138,15 @@ export default class Content {
   _handleModelFilmsEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this._filmPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
         this._clearContent();
         this._renderContent();
-        // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateType.MAJOR:
         this._clearContent({ resetRenderedFilmCount: true, resetSortType: true });
         this._renderContent();
-        // - обновить всю доску (например, при переключении фильтра)
         break;
       case UpdateType.INIT:
         this._isLoading = false;
@@ -169,7 +166,6 @@ export default class Content {
     this._renderContent();
   }
 
-  // Метод для рендеринга сортировки
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -280,10 +276,6 @@ export default class Content {
     }
 
     this._renderSort();
-    // Теперь, когда _renderContent рендерит контент не только на старте,
-    // но и по ходу работы приложения, нужно заменить
-    // константу Count.FILM_COUNT_STEP на свойство _renderedFilmCount,
-    // чтобы в случае перерисовки сохранить N-показанных карточек
     this._renderFilmCards(films.slice(0, Math.min(filmCount, this._renderedFilmCount)));
     this._renderProfile();
 
