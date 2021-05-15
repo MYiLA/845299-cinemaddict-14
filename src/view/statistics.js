@@ -152,6 +152,8 @@ export default class Statistics extends SmartView {
     };
 
     this._genreChart = null;
+    this._filtersElement = null;
+
     this._filters = [
       {
         type: StatisticFilterType.ALL_TIME,
@@ -268,6 +270,12 @@ export default class Statistics extends SmartView {
   }
 
   _setDatefilter() {
-    this.getElement().querySelector('.statistic__filters').addEventListener('click', this._filterChangeHandler);
+    this._filtersElement = this.getElement().querySelector('.statistic__filters');
+    this._filtersElement.addEventListener('click', this._filterChangeHandler);
+  }
+
+  removeElement() {
+    this._filtersElement.removeEventListener('click', this._filterChangeHandler);
+    super.removeElement();
   }
 }

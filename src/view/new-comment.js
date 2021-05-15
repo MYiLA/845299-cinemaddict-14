@@ -59,6 +59,9 @@ export default class NewComment extends SmartView {
     this._emojiToggleHandler = this._emojiToggleHandler.bind(this);
     this._textInputHandler = this._textInputHandler.bind(this);
 
+    this._emojiListElement = null;
+    this._textAreaElement = null;
+
     this._setInnerHandlers();
   }
 
@@ -67,22 +70,35 @@ export default class NewComment extends SmartView {
   }
 
   _setInnerHandlers() {
-    const emojiElements = this.getElement().querySelectorAll('.film-details__emoji-label');
-    emojiElements.forEach((el) => {
-      el.addEventListener('click', this._emojiToggleHandler);
-    });
-    const textAreaElement = this.getElement().querySelector('.film-details__comment-input');
-    textAreaElement.addEventListener('input', this._textInputHandler);
-    scrollFix(textAreaElement);
+    this._emojiListElement = this.getElement().querySelector('.film-details__emoji-list');
+    this._textAreaElement = this.getElement().querySelector('.film-details__comment-input');
+
+    this._emojiListElement.addEventListener('click', this._emojiToggleHandler);
+    this._textAreaElement.addEventListener('input', this._textInputHandler);
+
+    scrollFix(this._textAreaElement);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
   }
 
+  removeElement() {
+    this._emojiListElement.removeEventListener('click', this._emojiToggleHandler);
+    this._textAreaElement.removeEventListener('input', this._textInputHandler);
+
+    super.removeElement();
+  }
+
   _emojiToggleHandler(evt) {
+    const activeElement = evt.path[1];
+
+    if (activeElement.tagName !== 'LABEL') {
+      return;
+    }
+
     this.updateState({
-      emoji: `${evt.path[1].htmlFor}`.split('-')[1],
+      emoji: activeElement.getAttribute('for').split('-')[1],
     });
   }
 

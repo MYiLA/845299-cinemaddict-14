@@ -64,6 +64,11 @@ export default class CommentsList extends SmartView{
     this.getElement().addEventListener('click', this._deleteClickHandler);
   }
 
+  removeElement() {
+    this.getElement().removeEventListener('click', this._deleteClickHandler);
+    super.removeElement();
+  }
+
   static parseCommentsToState(comments) {
     return comments.map((comment) => {
       return Object.assign(

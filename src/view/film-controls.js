@@ -26,6 +26,10 @@ export default class FilmControls extends AbstractView {
     this._viewedClickHandler = this._viewedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+
+    this._controlWatchedElement = this.getElement().querySelector('.film-details__control-label--watched');
+    this._controlFavoriteElement = this.getElement().querySelector('.film-details__control-label--favorite');
+    this._controlWatchlistElement = this.getElement().querySelector('.film-details__control-label--watchlist');
   }
 
   getTemplate() {
@@ -49,16 +53,23 @@ export default class FilmControls extends AbstractView {
 
   setViewedClickHandler(callback) {
     this._callback.viewedClick = callback;
-    this.getElement().querySelector('.film-details__control-label--watched').addEventListener('click', this._viewedClickHandler);
+    this._controlWatchedElement.addEventListener('click', this._viewedClickHandler);
   }
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
-    this.getElement().querySelector('.film-details__control-label--favorite').addEventListener('click', this._favoriteClickHandler);
+    this._controlFavoriteElement.addEventListener('click', this._favoriteClickHandler);
   }
 
   setWatchlistClickHandler(callback) {
     this._callback.watchlistClick = callback;
-    this.getElement().querySelector('.film-details__control-label--watchlist').addEventListener('click', this._watchlistClickHandler);
+    this._controlWatchlistElement.addEventListener('click', this._watchlistClickHandler);
+  }
+
+  removeElement() {
+    this._controlWatchedElement.removeEventListener('click', this._viewedClickHandler);
+    this._controlFavoriteElement.removeEventListener('click', this._favoriteClickHandler);
+    this._controlWatchlistElement.removeEventListener('click', this._watchlistClickHandler);
+    super.removeElement();
   }
 }
