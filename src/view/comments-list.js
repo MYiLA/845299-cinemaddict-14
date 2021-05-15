@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import he from 'he';
+import { TagName } from '../const.js';
 import SmartView from './smart.js';
 
 const createCommentsListTemplate = (state) => {
@@ -52,7 +53,7 @@ export default class CommentsList extends SmartView{
 
   _deleteClickHandler(evt) {
     evt.preventDefault();
-    if (evt.target.tagName !== 'BUTTON') {
+    if (evt.target.tagName !== TagName.BUTTON) {
       return;
     }
 

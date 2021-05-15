@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { MenuItem } from '../const.js';
+import { MenuItem, TagName } from '../const.js';
 
 const createMenuTemplate = () => {
   return `
@@ -23,7 +23,7 @@ export default class Menu extends AbstractView {
     evt.preventDefault();
     const activeElement = evt.target;
 
-    if (activeElement.tagName !== 'A') {
+    if (activeElement.tagName !== TagName.A) {
       return;
     }
 

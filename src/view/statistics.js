@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart.js';
-import { StatisticFilterType } from '../const.js';
+import { StatisticFilterType, TagName } from '../const.js';
 import { getFilmPropertyCount } from '../utils/film.js';
 import { dataFilmsViewedInDateRange } from '../utils/statistics.js';
 import { translateMinutesToHours } from '../utils/common.js';
@@ -29,7 +29,7 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
       animation: {
         onComplete: function() {
           setTimeout(() => {
-            thisElement.style.minHeight = '';
+            thisElement.style.minHeight = 'auto';
           }, 0);
         },
       },
@@ -220,7 +220,7 @@ export default class Statistics extends SmartView {
 
   _filterChangeHandler(evt) {
 
-    if (evt.target.tagName !== 'LABEL') {
+    if (evt.target.tagName !== TagName.LABEL) {
       return;
     }
 

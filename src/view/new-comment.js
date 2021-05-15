@@ -1,4 +1,5 @@
 import he from 'he';
+import { TagName } from '../const.js';
 import { scrollFix } from '../utils/common.js';
 import SmartView from './smart.js';
 
@@ -93,7 +94,7 @@ export default class NewComment extends SmartView {
   _emojiToggleHandler(evt) {
     const activeElement = evt.path[1];
 
-    if (activeElement.tagName !== 'LABEL') {
+    if (activeElement.tagName !== TagName.LABEL) {
       return;
     }
 

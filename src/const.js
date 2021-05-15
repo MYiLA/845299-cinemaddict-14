@@ -1,3 +1,9 @@
+const TagName = {
+  A: 'A',
+  LABEL: 'LABEL',
+  BUTTON: 'BUTTON',
+};
+
 const Count = {
   FILM_COUNT_STEP: 5,
 };
@@ -48,5 +54,6 @@ export {
   UpdateType,
   FilterType,
   MenuItem,
-  StatisticFilterType
+  StatisticFilterType,
+  TagName
 };
