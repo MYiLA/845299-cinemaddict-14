@@ -74,3 +74,7 @@ api.getFilms()
     const statisticsComponent = new StatisticsView(filmsModel.getFilms());
     render(siteMainElement, statisticsComponent, RenderPosition.AFTER_CHILDS);
   });
+
+// window.addEventListener('load', () => {
+//   navigator.serviceWorker.register('/sw.js');
+// });
