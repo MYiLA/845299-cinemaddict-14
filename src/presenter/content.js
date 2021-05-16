@@ -5,7 +5,7 @@ import { filter } from '../utils/filter.js';
 
 import FilmPresenter from './film.js';
 import FilmsListView from '../view/films-list.js';
-import LoadingView from '../view/loading.js';
+import LoaderView from '../view/loader.js';
 import ProfileView from '../view/profile.js';
 import FilmsListTitleView from '../view/films-list-title';
 import FilmsListEmptyView from '../view/films-list-empty.js';
@@ -33,7 +33,7 @@ export default class Content {
     this._contentComponent = new ContentView();
     this._filmsListComponent = new FilmsListView();
     this._filmsListEmptyComponent = new FilmsListEmptyView();
-    this._loadingComponent = new LoadingView();
+    this._loaderComponent = new LoaderView();
     this._filmsListTitleComponent = new FilmsListTitleView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -150,7 +150,7 @@ export default class Content {
         break;
       case UpdateType.INIT:
         this._isLoading = false;
-        remove(this._loadingComponent);
+        remove(this._loaderComponent);
         this._renderContent();
         break;
     }
@@ -186,8 +186,8 @@ export default class Content {
     films.forEach((film) => this._renderFilmCard(film));
   }
 
-  _renderLoading() {
-    render(this._filmsListElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
+  _renderLoader() {
+    render(this._filmsListElement, this._loaderComponent, RenderPosition.BEFORE_CHILDS);
   }
 
   _renderFilmsListTitle() {
@@ -246,7 +246,7 @@ export default class Content {
     remove(this._sortComponent);
     remove(this._profileViewComponent);
     remove(this._showMoreComponent);
-    remove(this._loadingComponent);
+    remove(this._loaderComponent);
     remove(this._filmsListEmptyComponent);
 
     if (resetRenderedFilmCount) {
@@ -262,7 +262,7 @@ export default class Content {
 
   _renderContent() {
     if (this._isLoading) {
-      this._renderLoading();
+      this._renderLoader();
       return;
     }
 

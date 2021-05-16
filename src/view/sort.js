@@ -3,13 +3,13 @@ import { SortType, TagName } from '../const.js';
 
 const createSortTemplate = (sortType) => {
 
-  const activeClassRender = (sortTypeButton) => (sortTypeButton === sortType) ? 'sort__button--active' : '';
+  const renderActiveClass = (sortTypeButton) => (sortTypeButton === sortType) ? 'sort__button--active' : '';
 
   return `
   <ul class="sort">
-    <li><a href="#" class="sort__button ${ activeClassRender(SortType.DEFAULT) }" data-sort-type="${ SortType.DEFAULT }">Sort by default</a></li>
-    <li><a href="#" class="sort__button ${ activeClassRender(SortType.DATE) }" data-sort-type="${ SortType.DATE }">Sort by date</a></li>
-    <li><a href="#" class="sort__button ${ activeClassRender(SortType.RATING) }" data-sort-type="${ SortType.RATING }">Sort by rating</a></li>
+    <li><a href="#" class="sort__button ${ renderActiveClass(SortType.DEFAULT) }" data-sort-type="${ SortType.DEFAULT }">Sort by default</a></li>
+    <li><a href="#" class="sort__button ${ renderActiveClass(SortType.DATE) }" data-sort-type="${ SortType.DATE }">Sort by date</a></li>
+    <li><a href="#" class="sort__button ${ renderActiveClass(SortType.RATING) }" data-sort-type="${ SortType.RATING }">Sort by rating</a></li>
   </ul>`;
 };
 

@@ -3,7 +3,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isBetween);
 
-const dataFilmsViewedInDateRange = (films, dateFrom) => {
+const getDataOnViewedFilms = (films, dateFrom) => {
   const isViewedFilms = [];
 
   films.forEach((film) => {
@@ -53,6 +53,6 @@ const dataFilmsViewedInDateRange = (films, dateFrom) => {
 };
 
 export {
-  dataFilmsViewedInDateRange
+  getDataOnViewedFilms as dataOnViewedFilms
 };
 

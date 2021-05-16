@@ -1,27 +1,29 @@
 import AbstractView from './abstract.js';
+import { ViewedCount } from '../const.js';
 
 const createProfileTemplate = (viewedCount) => {
-  const titleRender = () => {
-    if (viewedCount === 0) {
+
+  const renderTitle = () => {
+    if (viewedCount === ViewedCount.NOT) {
       return '';
     }
 
-    if ((viewedCount >= 1) && (viewedCount <= 10)) {
+    if ((viewedCount > ViewedCount.NOT) && (viewedCount <= ViewedCount.NOVICE)) {
       return '<p class="profile__rating">Novice</p>';
     }
 
-    if ((viewedCount >= 11) && (viewedCount <= 20)) {
+    if ((viewedCount > ViewedCount.NOVICE) && (viewedCount <= ViewedCount.FAN)) {
       return '<p class="profile__rating">Fan</p>';
     }
 
-    if (viewedCount >= 21) {
+    if (viewedCount > ViewedCount.FAN) {
       return '<p class="profile__rating">Movie Buff</p>';
     }
   };
 
   return `
   <section class="header__profile profile">
-    ${ titleRender() }
+    ${ renderTitle() }
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import he from 'he';
-import { TagName } from '../const.js';
+import { TagName, SHAKE_ANIMATION_TIMEOUT } from '../const.js';
 import SmartView from './smart.js';
 
 const createCommentsListTemplate = (state) => {
@@ -100,10 +100,10 @@ export default class CommentsList extends SmartView{
   }
 
   shake(callback, commentId) {
-    this.getElement().querySelector(`[data-id="${ commentId }"]`).style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
+    this.getElement().querySelector(`[data-id="${ commentId }"]`).style.animation = `shake ${ SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
     setTimeout(() => {
       this.getElement().style.animation = '';
       callback();
-    }, this._SHAKE_ANIMATION_TIMEOUT);
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

@@ -1,5 +1,5 @@
 import he from 'he';
-import { TagName } from '../const.js';
+import { TagName, SHAKE_ANIMATION_TIMEOUT } from '../const.js';
 import { scrollFix } from '../utils/common.js';
 import SmartView from './smart.js';
 
@@ -11,7 +11,7 @@ const CLEAR_COMMENT = {
 const createNewCommentTemplate = (state) => {
 
   const { emoji, text, isDisabled } = state;
-  const emojiRender = () => {
+  const renderEmoji = () => {
 
     if (!emoji) {
       return '';
@@ -22,7 +22,7 @@ const createNewCommentTemplate = (state) => {
   return `
   <div class="film-details__new-comment">
     <div class="film-details__add-emoji-label">
-      ${ emojiRender() }
+      ${ renderEmoji() }
     </div>
 
     <label class="film-details__comment-label">
@@ -117,10 +117,10 @@ export default class NewComment extends SmartView {
     if (this._state.emoji && this._state.text) {
       this._callback.commentSubmit(NewComment.parseStateToComments(this._state));
     } else {
-      this.getElement().style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
+      this.getElement().style.animation = `shake ${ SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
       setTimeout(() => {
         this.getElement().style.animation = '';
-      }, this._SHAKE_ANIMATION_TIMEOUT);
+      }, SHAKE_ANIMATION_TIMEOUT);
     }
   }
 

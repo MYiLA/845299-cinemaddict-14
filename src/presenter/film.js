@@ -7,7 +7,7 @@ import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 import FilmControlsView from '../view/film-controls.js';
 import CommentsListView from '../view/comments-list.js';
-import LoadingView from '../view/loading.js';
+import LoaderView from '../view/loader.js';
 import NewComment from '../view/new-comment.js';
 
 const Mode = {
@@ -33,7 +33,7 @@ export default class Film {
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
 
-    this._loadingComponent = new LoadingView();
+    this._loaderComponent = new LoaderView();
     this._isCommentsLoading = true;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
@@ -266,7 +266,7 @@ export default class Film {
 
   _renderCommentsList () {
     if (this._isCommentsLoading) {
-      this._renderCommentsLoading();
+      this._renderCommentsLoader();
       return;
     }
 
@@ -313,13 +313,13 @@ export default class Film {
   _handleModelCommentsEvent(updateType) {
     if (updateType === UpdateType.INIT) {
       this._isCommentsLoading = false;
-      remove(this._loadingComponent);
+      remove(this._loaderComponent);
     } else {
       this._updateCommentList();
     }
   }
 
-  _renderCommentsLoading() {
-    render(this._commentWrapElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
+  _renderCommentsLoader() {
+    render(this._commentWrapElement, this._loaderComponent, RenderPosition.BEFORE_CHILDS);
   }
 }
