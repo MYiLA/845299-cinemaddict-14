@@ -57,7 +57,9 @@ export default class CommentsList extends SmartView{
       return;
     }
 
-    this._callback.deleteClick(evt.path[3].dataset.id);
+    const path = evt.path || (evt.composedPath && evt.composedPath());
+
+    this._callback.deleteClick(path[3].dataset.id);
   }
 
   setDeleteClickHandler(callback) {

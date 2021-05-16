@@ -92,7 +92,8 @@ export default class NewComment extends SmartView {
   }
 
   _emojiToggleHandler(evt) {
-    const activeElement = evt.path[1];
+    const path = evt.path || (evt.composedPath && evt.composedPath());
+    const activeElement = path[1];
 
     if (activeElement.tagName !== TagName.LABEL) {
       return;
