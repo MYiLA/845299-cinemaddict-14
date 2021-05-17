@@ -19,6 +19,16 @@ export default class Menu extends AbstractView {
     return createMenuTemplate(this._isStats);
   }
 
+  setMenuClickHandler(callback) {
+    this._callback.menuClick = callback;
+    this.getElement().addEventListener('click', this._statsClickHandler);
+  }
+
+  removeElement() {
+    this.getElement().removeEventListener('click', this._statsClickHandler);
+    super.removeElement();
+  }
+
   _statsClickHandler(evt) {
     evt.preventDefault();
     const activeElement = evt.target;
@@ -40,15 +50,5 @@ export default class Menu extends AbstractView {
       activeElement.classList.add('main-navigation__item--active');
       this._callback.menuClick(MenuItem.FILMS);
     }
-  }
-
-  setMenuClickHandler(callback) {
-    this._callback.menuClick = callback;
-    this.getElement().addEventListener('click', this._statsClickHandler);
-  }
-
-  removeElement() {
-    this.getElement().removeEventListener('click', this._statsClickHandler);
-    super.removeElement();
   }
 }

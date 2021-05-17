@@ -16,11 +16,6 @@ export default class ShowMore extends AbstractView {
     return createShowMoreTemplate();
   }
 
-  _showClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.showClick();
-  }
-
   setShowClickHandler(callback) {
     this._callback.showClick = callback;
     this.getElement().addEventListener('click', this._showClickHandler);
@@ -29,5 +24,10 @@ export default class ShowMore extends AbstractView {
   removeElement() {
     this.getElement().removeEventListener('click', this._showClickHandler);
     super.removeElement();
+  }
+
+  _showClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.showClick();
   }
 }

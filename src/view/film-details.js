@@ -14,7 +14,7 @@ const createFilmDetailsTemplate = (film) => {
 
   const { hours, minutes } = translateMinutesToHours(runtime);
 
-  const genresRender = () => {
+  const renderGenres = () => {
     if (genres.length === 1) {
       return `
         <td class="film-details__term">Genre</td>
@@ -88,7 +88,7 @@ const createFilmDetailsTemplate = (film) => {
                 <td class="film-details__cell">${ country }</td>
               </tr>
               <tr class="film-details__row">
-                  ${ genresRender() }
+                  ${ renderGenres() }
               </tr>
             </table>
 
@@ -118,9 +118,9 @@ export default class FilmDetails extends AbstractView {
     return createFilmDetailsTemplate(this._film, this._state);
   }
 
-  _closeClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.closeClick();
+  setCloseClickHandler(callback) {
+    this._callback.closeClick = callback;
+    this._closeElement.addEventListener('click', this._closeClickHandler);
   }
 
   removeElement() {
@@ -128,8 +128,8 @@ export default class FilmDetails extends AbstractView {
     super.removeElement();
   }
 
-  setCloseClickHandler(callback) {
-    this._callback.closeClick = callback;
-    this._closeElement.addEventListener('click', this._closeClickHandler);
+  _closeClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeClick();
   }
 }

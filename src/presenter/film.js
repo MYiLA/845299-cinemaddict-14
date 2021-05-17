@@ -7,7 +7,7 @@ import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 import FilmControlsView from '../view/film-controls.js';
 import CommentsListView from '../view/comments-list.js';
-import LoadingView from '../view/loading.js';
+import LoaderView from '../view/loader.js';
 import NewComment from '../view/new-comment.js';
 
 const Mode = {
@@ -33,7 +33,7 @@ export default class Film {
     this._filmCardComponent = null;
     this._mode = Mode.CLOSE;
 
-    this._loadingComponent = new LoadingView();
+    this._loaderComponent = new LoaderView();
     this._isCommentsLoading = true;
 
     this._hangleOpenClick = this._hangleOpenClick.bind(this);
@@ -78,6 +78,12 @@ export default class Film {
 
   destroy() {
     remove(this._filmCardComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.CLOSE) {
+      this._closeFilmDetails();
+    }
   }
 
   setViewStateComment(state, idComment) {
@@ -139,12 +145,6 @@ export default class Film {
       });
   }
 
-  resetView() {
-    if (this._mode !== Mode.CLOSE) {
-      this._closeFilmDetails();
-    }
-  }
-
   _closeFilmDetails() {
     this._commentsModel.removeObserver(this._handleModelCommentsEvent);
     this._siteBodyElement.removeChild(this._siteBodyElement.querySelector('.film-details'));
@@ -156,6 +156,74 @@ export default class Film {
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
       this._film);
+  }
+
+  _renderDetailsComponent() {
+    this._filmDetailsComponent = new FilmDetailsView(this._film);
+
+    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
+    document.addEventListener('keydown', this._escKeyDownHandler);
+
+    this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
+    this._commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container');
+    this._topContainer = this._filmDetailsComponent.getElement().querySelector('.film-details__top-container');
+
+    this._siteBodyElement.classList.add('hide-overflow');
+  }
+
+  _updateCommentList() {
+    this._clearCommentsList();
+    this._renderCommentsList();
+  }
+
+  _renderCommentsList () {
+    if (this._isCommentsLoading) {
+      this._renderCommentsLoader();
+      return;
+    }
+
+    const comments = this._commentsModel.getComments();
+
+    this._commentsListComponent = new CommentsListView(comments);
+    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
+    this._renderNewCommentComponent();
+
+    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
+    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
+  }
+
+  _clearCommentsList() {
+    remove(this._newCommentComponent);
+    remove(this._commentsListComponent);
+    document.removeEventListener('keydown', this._ctrlEnterKeyDownHandler);
+  }
+
+  _renderNewCommentComponent() {
+    this._newCommentComponent = new NewComment();
+    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
+  }
+
+  _updateFilmControls() {
+    this._clearFilmControls();
+    this._renderFilmControls();
+  }
+
+  _renderFilmControls() {
+    this._filmControlsComponent = new FilmControlsView(this._film);
+
+    this._filmControlsComponent.setViewedClickHandler(this._handleViewedClick);
+    this._filmControlsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmControlsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+
+    render(this._topContainer, this._filmControlsComponent, RenderPosition.AFTER_CHILDS);
+  }
+
+  _clearFilmControls() {
+    remove(this._filmControlsComponent);
+  }
+
+  _renderCommentsLoader() {
+    render(this._commentWrapElement, this._loaderComponent, RenderPosition.BEFORE_CHILDS);
   }
 
   _escKeyDownHandler(evt) {
@@ -246,80 +314,12 @@ export default class Film {
         }));
   }
 
-  _renderDetailsComponent() {
-    this._filmDetailsComponent = new FilmDetailsView(this._film);
-
-    this._filmDetailsComponent.setCloseClickHandler(this._handleCloseClick);
-    document.addEventListener('keydown', this._escKeyDownHandler);
-
-    this._siteBodyElement.appendChild(this._filmDetailsComponent.getElement());
-    this._commentWrapElement = this._filmDetailsComponent.getElement().querySelector('.film-details__bottom-container');
-    this._topContainer = this._filmDetailsComponent.getElement().querySelector('.film-details__top-container');
-
-    this._siteBodyElement.classList.add('hide-overflow');
-  }
-
-  _updateCommentList() {
-    this._clearCommentsList();
-    this._renderCommentsList();
-  }
-
-  _renderCommentsList () {
-    if (this._isCommentsLoading) {
-      this._renderCommentsLoading();
-      return;
-    }
-
-    const comments = this._commentsModel.getComments();
-
-    this._commentsListComponent = new CommentsListView(comments);
-    render(this._commentWrapElement, this._commentsListComponent, RenderPosition.BEFORE_CHILDS);
-    this._renderNewCommentComponent();
-
-    this._commentsListComponent.setDeleteClickHandler(this._handleDeleteClick);
-    document.addEventListener('keydown', this._ctrlEnterKeyDownHandler);
-  }
-
-  _clearCommentsList() {
-    remove(this._newCommentComponent);
-    remove(this._commentsListComponent);
-    document.removeEventListener('keydown', this._ctrlEnterKeyDownHandler);
-  }
-
-  _renderNewCommentComponent() {
-    this._newCommentComponent = new NewComment();
-    render(this._commentsListComponent, this._newCommentComponent, RenderPosition.AFTER_CHILDS);
-  }
-
-  _updateFilmControls() {
-    this._clearFilmControls();
-    this._renderFilmControls();
-  }
-
-  _renderFilmControls() {
-    this._filmControlsComponent = new FilmControlsView(this._film);
-
-    this._filmControlsComponent.setViewedClickHandler(this._handleViewedClick);
-    this._filmControlsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._filmControlsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-
-    render(this._topContainer, this._filmControlsComponent, RenderPosition.AFTER_CHILDS);
-  }
-
-  _clearFilmControls() {
-    remove(this._filmControlsComponent);
-  }
-
   _handleModelCommentsEvent(updateType) {
     if (updateType === UpdateType.INIT) {
       this._isCommentsLoading = false;
-      remove(this._loadingComponent);
+      remove(this._loaderComponent);
     } else {
       this._updateCommentList();
     }
-  }
-
-  _renderCommentsLoading() {
-    render(this._commentWrapElement, this._loadingComponent, RenderPosition.BEFORE_CHILDS);
   }
 }

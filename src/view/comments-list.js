@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import he from 'he';
-import { TagName } from '../const.js';
+import { TagName, SHAKE_ANIMATION_TIMEOUT } from '../const.js';
 import SmartView from './smart.js';
 
 const createCommentsListTemplate = (state) => {
@@ -47,41 +47,18 @@ export default class CommentsList extends SmartView{
     return createCommentsListTemplate(this._state);
   }
 
-  restoreHandlers() {
-    this.setDeleteClickHandler(this._callback.deleteClick);
-  }
-
-  _deleteClickHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.tagName !== TagName.BUTTON) {
-      return;
-    }
-
-    const path = evt.path || (evt.composedPath && evt.composedPath());
-
-    this._callback.deleteClick(path[3].dataset.id);
-  }
-
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
     this.getElement().addEventListener('click', this._deleteClickHandler);
   }
 
+  restoreHandlers() {
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
   removeElement() {
     this.getElement().removeEventListener('click', this._deleteClickHandler);
     super.removeElement();
-  }
-
-  static parseCommentsToState(comments) {
-    return comments.map((comment) => {
-      return Object.assign(
-        {},
-        comment,
-        {
-          isDisabled: false,
-          isDeleting: false,
-        });
-    });
   }
 
   updateState(state, commentId) {
@@ -100,10 +77,34 @@ export default class CommentsList extends SmartView{
   }
 
   shake(callback, commentId) {
-    this.getElement().querySelector(`[data-id="${ commentId }"]`).style.animation = `shake ${ this._SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
+    this.getElement().querySelector(`[data-id="${ commentId }"]`).style.animation = `shake ${ SHAKE_ANIMATION_TIMEOUT / 1000 }s`;
     setTimeout(() => {
       this.getElement().style.animation = '';
       callback();
-    }, this._SHAKE_ANIMATION_TIMEOUT);
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.tagName !== TagName.BUTTON) {
+      return;
+    }
+
+    const path = evt.path || (evt.composedPath && evt.composedPath());
+
+    this._callback.deleteClick(path[3].dataset.id);
+  }
+
+  static parseCommentsToState(comments) {
+    return comments.map((comment) => {
+      return Object.assign(
+        {},
+        comment,
+        {
+          isDisabled: false,
+          isDeleting: false,
+        });
+    });
+  }
+
 }

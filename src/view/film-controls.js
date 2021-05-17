@@ -36,21 +36,6 @@ export default class FilmControls extends AbstractView {
     return createFilmControlsTemplate(this._state);
   }
 
-  _viewedClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.viewedClick(UpdateType.PATCH);
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick(UpdateType.PATCH);
-  }
-
-  _watchlistClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.watchlistClick(UpdateType.PATCH);
-  }
-
   setViewedClickHandler(callback) {
     this._callback.viewedClick = callback;
     this._controlWatchedElement.addEventListener('click', this._viewedClickHandler);
@@ -71,5 +56,20 @@ export default class FilmControls extends AbstractView {
     this._controlFavoriteElement.removeEventListener('click', this._favoriteClickHandler);
     this._controlWatchlistElement.removeEventListener('click', this._watchlistClickHandler);
     super.removeElement();
+  }
+
+  _viewedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.viewedClick(UpdateType.PATCH);
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick(UpdateType.PATCH);
+  }
+
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchlistClick(UpdateType.PATCH);
   }
 }

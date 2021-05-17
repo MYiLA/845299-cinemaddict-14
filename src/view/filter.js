@@ -41,15 +41,6 @@ export default class Filter extends AbstractView {
     return createFilterTemplate(this._filters, this._currentFilter);
   }
 
-  _filterTypeChangeHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.tagName !== TagName.A) {
-      return;
-    }
-
-    this._callback.filterTypeChange(evt.target.getAttribute('href').split('#')[1]);
-  }
-
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement().addEventListener('click', this._filterTypeChangeHandler);
@@ -58,5 +49,14 @@ export default class Filter extends AbstractView {
   removeElement() {
     this.getElement().removeEventListener('click', this._filterTypeChangeHandler);
     super.removeElement();
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.tagName !== TagName.A) {
+      return;
+    }
+
+    this._callback.filterTypeChange(evt.target.getAttribute('href').split('#')[1]);
   }
 }

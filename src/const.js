@@ -54,6 +54,14 @@ const State = {
   ABORTING_DELETING: 'ABORTING_DELETING',
 };
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
+const ViewedCount = {
+  NOT: 0,
+  NOVICE: 10,
+  FAN: 20,
+};
+
 export {
   Count,
   SortType,
@@ -63,5 +71,7 @@ export {
   MenuItem,
   StatisticFilterType,
   TagName,
-  State
+  State,
+  SHAKE_ANIMATION_TIMEOUT,
+  ViewedCount
 };
