@@ -4,7 +4,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart.js';
 import { StatisticFilterType, TagName, ViewedCount } from '../const.js';
 import { getFilmPropertyCount } from '../utils/film.js';
-import { dataOnViewedFilms } from '../utils/statistics.js';
+import { filmsStats } from '../utils/statistics.js';
 import { translateMinutesToHours } from '../utils/common.js';
 
 const HEIGHT_FOR_SCROLL = '1200px';
@@ -71,7 +71,7 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
 
 const createStatisticsTemplate = (data, filters) => {
   const { films, dateFrom } = data;
-  const { isViewedCount, runtimeCount, topGenre } = dataOnViewedFilms(films, dateFrom);
+  const { isViewedCount, runtimeCount, topGenre } = filmsStats(films, dateFrom);
   const { hours, minutes } = translateMinutesToHours(runtimeCount);
 
   const renderTitle = () => {
@@ -193,6 +193,29 @@ export default class Statistics extends SmartView {
     return createStatisticsTemplate(this._state, this._filters);
   }
 
+  _setCharts() {
+    if (this._genreChart !== null) {
+      this._genreChart = null;
+    }
+
+    const genreCtx = this.getElement().querySelector('.statistic__chart');
+
+    const { films, dateFrom } = this._state;
+    const { numbersOfEachGenre } = filmsStats(films, dateFrom );
+
+    this._genreChart = renderGenreChart(genreCtx, numbersOfEachGenre, this.getElement());
+  }
+
+  _setDatefilter() {
+    this._filtersElement = this.getElement().querySelector('.statistic__filters');
+    this._filtersElement.addEventListener('click', this._filterChangeHandler);
+  }
+
+  removeElement() {
+    this._filtersElement.removeEventListener('click', this._filterChangeHandler);
+    super.removeElement();
+  }
+
   restoreHandlers() {
     this._setCharts();
     this._setDatefilter();
@@ -203,19 +226,6 @@ export default class Statistics extends SmartView {
     this.show();
     this.getElement().style.minHeight = HEIGHT_FOR_SCROLL;
     document.documentElement.scrollTop = this._scroll;
-  }
-
-  _setCharts() {
-    if (this._genreChart !== null) {
-      this._genreChart = null;
-    }
-
-    const genreCtx = this.getElement().querySelector('.statistic__chart');
-
-    const { films, dateFrom } = this._state;
-    const { numbersOfEachGenre } = dataOnViewedFilms(films, dateFrom );
-
-    this._genreChart = renderGenreChart(genreCtx, numbersOfEachGenre, this.getElement());
   }
 
   _filterChangeHandler(evt) {
@@ -267,15 +277,5 @@ export default class Statistics extends SmartView {
         });
         break;
     }
-  }
-
-  _setDatefilter() {
-    this._filtersElement = this.getElement().querySelector('.statistic__filters');
-    this._filtersElement.addEventListener('click', this._filterChangeHandler);
-  }
-
-  removeElement() {
-    this._filtersElement.removeEventListener('click', this._filterChangeHandler);
-    super.removeElement();
   }
 }

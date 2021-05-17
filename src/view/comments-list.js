@@ -47,41 +47,18 @@ export default class CommentsList extends SmartView{
     return createCommentsListTemplate(this._state);
   }
 
-  restoreHandlers() {
-    this.setDeleteClickHandler(this._callback.deleteClick);
-  }
-
-  _deleteClickHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.tagName !== TagName.BUTTON) {
-      return;
-    }
-
-    const path = evt.path || (evt.composedPath && evt.composedPath());
-
-    this._callback.deleteClick(path[3].dataset.id);
-  }
-
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
     this.getElement().addEventListener('click', this._deleteClickHandler);
   }
 
+  restoreHandlers() {
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
   removeElement() {
     this.getElement().removeEventListener('click', this._deleteClickHandler);
     super.removeElement();
-  }
-
-  static parseCommentsToState(comments) {
-    return comments.map((comment) => {
-      return Object.assign(
-        {},
-        comment,
-        {
-          isDisabled: false,
-          isDeleting: false,
-        });
-    });
   }
 
   updateState(state, commentId) {
@@ -106,4 +83,28 @@ export default class CommentsList extends SmartView{
       callback();
     }, SHAKE_ANIMATION_TIMEOUT);
   }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.tagName !== TagName.BUTTON) {
+      return;
+    }
+
+    const path = evt.path || (evt.composedPath && evt.composedPath());
+
+    this._callback.deleteClick(path[3].dataset.id);
+  }
+
+  static parseCommentsToState(comments) {
+    return comments.map((comment) => {
+      return Object.assign(
+        {},
+        comment,
+        {
+          isDisabled: false,
+          isDeleting: false,
+        });
+    });
+  }
+
 }

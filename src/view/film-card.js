@@ -69,27 +69,6 @@ export default class FilmCard extends AbstractView {
     return createFilmCardTemplate(this._film, this._comments);
   }
 
-  _openClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.openClick();
-  }
-
-  _viewedClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.viewedClick();
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
-  _watchlistClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.watchlistClick();
-  }
-
-
   setOpenClickHandler(callback) {
     this._callback.openClick = callback;
 
@@ -121,5 +100,25 @@ export default class FilmCard extends AbstractView {
     this._controlFavoriteElement.removeEventListener('click', this._favoriteClickHandler);
     this._controlWatchlistElement.removeEventListener('click', this._watchlistClickHandler);
     super.removeElement();
+  }
+
+  _openClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.openClick();
+  }
+
+  _viewedClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.viewedClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchlistClick();
   }
 }

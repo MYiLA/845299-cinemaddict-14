@@ -118,9 +118,9 @@ export default class FilmDetails extends AbstractView {
     return createFilmDetailsTemplate(this._film, this._state);
   }
 
-  _closeClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.closeClick();
+  setCloseClickHandler(callback) {
+    this._callback.closeClick = callback;
+    this._closeElement.addEventListener('click', this._closeClickHandler);
   }
 
   removeElement() {
@@ -128,8 +128,8 @@ export default class FilmDetails extends AbstractView {
     super.removeElement();
   }
 
-  setCloseClickHandler(callback) {
-    this._callback.closeClick = callback;
-    this._closeElement.addEventListener('click', this._closeClickHandler);
+  _closeClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeClick();
   }
 }

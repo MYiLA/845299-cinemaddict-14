@@ -62,10 +62,6 @@ const ViewedCount = {
   FAN: 20,
 };
 
-// if ((viewedCount > ViewedCount.NOT) && (viewedCount <= ViewedCount.NOVICE)) { return '<p class="profile__rating">Novice</p>'; }
-// if ((viewedCount > ViewedCount.NOVICE) && (viewedCount <= ViewedCount.FAN)) { return '<p class="profile__rating">Fan</p>'; }
-// if (viewedCount > ViewedCount.FAN) { return '<p class="profile__rating">Movie Buff</p>'; }
-
 export {
   Count,
   SortType,
