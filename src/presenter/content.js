@@ -14,11 +14,12 @@ import ShowMoreView from '../view/show-more.js';
 import ContentView from '../view/content.js';
 
 export default class Content {
-  constructor(contentContainer, filmsModel, commentsModel, filterModel, api) {
+  constructor(contentContainer, filmsModel, commentsModel, filterModel, apiFilms, apiComments) {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._commentsModel = commentsModel;
-    this._api = api;
+    this._apiFilms = apiFilms;
+    this._apiComments = apiComments;
     this._contentContainer = contentContainer;
     this._renderedFilmCount = Count.FILM_COUNT_STEP;
     this._filmPresenter = {};
@@ -104,7 +105,7 @@ export default class Content {
   }
 
   _renderFilmCard(film) {
-    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._api);
+    const filmPresenter = new FilmPresenter(this._filmsListComponent, this._handleViewAction, this._handleModeChange, this._commentsModel, this._apiComments);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }
@@ -207,7 +208,7 @@ export default class Content {
   _handleViewAction(actionType, updateType, update, film) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update)
+        this._apiFilms.updateFilm(update)
           .then((response) => {
             this._filmsModel.updateFilms(updateType, response);
           })
@@ -217,7 +218,7 @@ export default class Content {
         break;
       case UserAction.ADD_COMMENT:
         this._filmPresenter[film.id].setViewStateComment(FilmPresenterViewState.SAVING);
-        this._api.addComment(film.id, update)
+        this._apiComments.addComment(film.id, update)
           .then((response) => {
             this._commentsModel.addComment(updateType, response.comments);
             this._filmsModel.updateFilms(updateType, response.film);
@@ -228,7 +229,7 @@ export default class Content {
         break;
       case UserAction.DELETE_COMMENT:
         this._filmPresenter[film.id].setViewStateComment(FilmPresenterViewState.DELETING, update);
-        this._api.deleteComment(update)
+        this._apiComments.deleteComment(update)
           .then(() => {
             this._commentsModel.deleteComment(updateType, update);
             this._filmsModel.updateFilms(updateType, film);

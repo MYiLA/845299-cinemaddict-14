@@ -22,8 +22,13 @@ const removeItemOnce = (arr, value) => {
   return arr;
 };
 
+const isOnline = () => {
+  return window.navigator.onLine;
+};
+
 export {
   scrollFix,
   translateMinutesToHours,
-  removeItemOnce
+  removeItemOnce,
+  isOnline
 };

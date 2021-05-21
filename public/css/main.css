@@ -1134,3 +1134,18 @@ button {
 .hide {
   display: none;
 }
+
+.toast-item {
+  z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--vertical-gap) var(--horizontal-gap);
+  position: fixed;
+  top: 0;
+  right: 0;
+
+  font-size: var(--font-size-bigger);
+  font-weight: 800;
+  background-color: #121213;
+  box-shadow: 0 5px 15px var(--text-color-active);
+}

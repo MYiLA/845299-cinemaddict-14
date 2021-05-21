@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { render, remove, RenderPosition, replace } from '../utils/render.js';
-import { scrollFix, removeItemOnce } from '../utils/common.js';
+import { scrollFix, removeItemOnce, isOnline } from '../utils/common.js';
+import { showToast } from '../utils/toast.js';
 import { UserAction, UpdateType, State } from '../const.js';
 
 import FilmCardView from '../view/film-card.js';
@@ -240,6 +241,7 @@ export default class Film {
       (evt.metaKey && evt.code === 'Enter'))
     {
       evt.preventDefault();
+
       this._newCommentComponent.setCommentSubmitHandler(this._handleCommentSubmit);
 
       scrollFix(this._filmDetailsComponent.getElement());
@@ -247,6 +249,11 @@ export default class Film {
   }
 
   _handleCommentSubmit(state) {
+    if (!isOnline()) {
+      this._newCommentComponent.shake(showToast('You can\'t save comment offline'));
+      return;
+    }
+
     this._handleViewAction(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
@@ -259,6 +266,12 @@ export default class Film {
   }
 
   _handleDeleteClick(idComment) {
+
+    if (!isOnline()) {
+      this._commentsListComponent.shake(showToast('You can\'t delete comment offline'), idComment);
+      return;
+    }
+
     this._handleViewAction(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,

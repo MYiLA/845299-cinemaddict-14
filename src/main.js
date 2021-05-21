@@ -1,4 +1,5 @@
 import { remove, render, RenderPosition } from './utils/render.js';
+import { showToast, hideToast } from './utils/toast.js';
 import { UpdateType, MenuItem } from './const.js';
 import FilmsModel from './model/films.js';
 import СommentsModel from './model/comments.js';
@@ -8,15 +9,27 @@ import FilterPresenter from './presenter/filter.js';
 import MenuView from './view/menu.js';
 import MoviesCountView from './view/movies-count.js';
 import StatisticsView from './view/statistics.js';
-import Api from './api.js';
+import Api from './api/api.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 
 const AUTHORIZATION = 'Basic eo06840ik29889a';
 const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
+const STORE_FILMS_PREFIX = 'films';
+const STORE_COMMENTS_PREFIX = 'comments';
+const STORE_VER = 'v14';
+const STORE_FILMS_NAME = `${STORE_FILMS_PREFIX}-${STORE_VER}`;
+const STORE_COMMENTS_NAME = `${STORE_COMMENTS_PREFIX}-${STORE_VER}`;
+
 
 const siteMainElement = document.querySelector('.main');
 const siteFooterStatElement = document.querySelector('.footer__statistics');
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const storeFilms = new Store(STORE_FILMS_NAME, window.localStorage);
+const storeComments = new Store(STORE_COMMENTS_NAME, window.localStorage);
+const apiWithProviderFilms = new Provider(api, storeFilms);
+const apiWithProviderComments = new Provider(api, storeComments);
 
 const filmsModel = new FilmsModel();
 const commentsModel = new СommentsModel();
@@ -26,7 +39,7 @@ const menuViewComponent = new MenuView();
 
 const moviesCountEmptyComponent = new MoviesCountView(0);
 
-const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel, api);
+const contentPresenter = new ContentPresenter(siteMainElement, filmsModel, commentsModel, filterModel, apiWithProviderFilms, apiWithProviderComments);
 const filterPresenter = new FilterPresenter(menuViewComponent, filterModel, filmsModel);
 
 
@@ -62,7 +75,7 @@ const renderStatisticsComponent = () => {
   render(siteMainElement, statisticsComponent, RenderPosition.AFTER_CHILDS);
 };
 
-api.getFilms()
+apiWithProviderFilms.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
     remove(moviesCountEmptyComponent);
@@ -77,4 +90,14 @@ api.getFilms()
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  // console.log('ONLINE');
+  hideToast();
+  apiWithProviderFilms.sync();
+});
+
+window.addEventListener('offline', () => {
+  showToast('Oops! Your internet is not working');
 });
