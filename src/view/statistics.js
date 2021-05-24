@@ -8,6 +8,14 @@ import { filmsStats } from '../utils/statistics.js';
 import { translateMinutesToHours } from '../utils/common.js';
 
 const HEIGHT_FOR_SCROLL = '1200px';
+const ChartSetting = {
+  COLOR: '#ffe800',
+  FONT_COLOR: '#ffffff',
+  FONT_SIZE: 20,
+  OFFSET: 40,
+  PADDING: 100,
+  BAR_THICKNESS: 24,
+};
 
 const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
   return new Chart(genreCtx, {
@@ -17,13 +25,13 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
       labels: Object.keys(numbersOfEachGenre),
       datasets: [{
         data: Object.values(numbersOfEachGenre),
-        backgroundColor: '#ffe800',
-        hoverBackgroundColor: '#ffe800',
+        backgroundColor: ChartSetting.COLOR,
+        hoverBackgroundColor: ChartSetting.COLOR,
         anchor: 'start',
       }],
     },
     dataset: {
-      barThickness: 24,
+      barThickness: ChartSetting.BAR_THICKNESS,
     },
     options: {
       animation: {
@@ -36,20 +44,20 @@ const renderGenreChart = (genreCtx, numbersOfEachGenre, thisElement) => {
       plugins: {
         datalabels: {
           font: {
-            size: 20,
+            size: ChartSetting.FONT_SIZE,
           },
-          color: '#ffffff',
+          color: ChartSetting.FONT_COLOR,
           anchor: 'start',
           align: 'start',
-          offset: 40,
+          offset: ChartSetting.OFFSET,
         },
       },
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#ffffff',
-            padding: 100,
-            fontSize: 20,
+            fontColor: ChartSetting.FONT_COLOR,
+            padding: ChartSetting.PADDING,
+            fontSize: ChartSetting.FONT_SIZE,
           },
         }],
         xAxes: [{
